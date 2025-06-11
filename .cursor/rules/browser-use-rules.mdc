@@ -1,0 +1,215 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Browser-Use JS Cursor Rules
+
+## 项目概述
+Browser-Use JS 是 Browser-Use 的纯浏览器版本 JavaScript 复刻，让 AI 代理能够直接在浏览器中控制网页交互。
+
+## 技术栈
+- **语言**: TypeScript
+- **构建工具**: Vite
+- **运行环境**: 浏览器
+- **目标**: ES2020+
+- **模块系统**: ESM
+- **包管理**: pnpm
+
+## Git Commit Message 规范
+
+遵循 Conventional Commits 规范。
+
+## 项目结构
+```
+src/
+├── main.ts              # 主入口文件
+├── agent/               # AI 代理核心逻辑
+│   ├── index.ts
+│   ├── memory/          # 记忆管理
+│   └── message_manager/ # 消息管理
+├── browser/             # 浏览器交互模块
+│   ├── index.ts
+│   └── controller.ts
+├── controller/          # 控制器和动作注册
+│   ├── index.ts
+│   └── registry/        # 动作注册系统
+├── dom/                 # DOM 处理和元素识别
+│   ├── index.ts
+│   ├── clickable_element_processor/
+│   └── history_tree_processor/
+└── types/               # TypeScript 类型定义
+    └── index.ts
+```
+
+## 编码规范
+
+### TypeScript 规范
+- 使用严格的 TypeScript 配置
+- 所有函数和方法必须有明确的类型注解
+- 优先使用 interface 而不是 type（除非需要联合类型）
+- 使用 Pydantic 风格的数据验证（通过 TypeScript 类型）
+### 命名规范
+- **文件名**: 使用 kebab-case (例: `clickable-element-processor.ts`)
+- **类名**: 使用 PascalCase (例: `BrowserController`)
+- **函数/变量名**: 使用 camelCase (例: `processElement`)
+- **常量**: 使用 UPPER_SNAKE_CASE (例: `MAX_RETRY_COUNT`)
+- **接口**: 使用 PascalCase，可选择 I 前缀 (例: `IActionResult` 或 `ActionResult`)
+
+### 代码组织
+- 每个模块都应该有一个 `index.ts` 文件作为入口点
+- 使用 barrel exports 来简化导入
+- 将相关功能组织在同一个目录下
+- 保持文件大小合理（通常不超过 300 行）
+
+### 注释和文档
+- 所有公共 API 必须有 JSDoc 注释
+- 复杂的业务逻辑需要添加解释性注释
+- 使用中文注释（与项目文档保持一致）
+
+```typescript
+/**
+ * 处理可点击元素的识别和交互
+ * @param element - 要处理的 DOM 元素
+ * @param action - 要执行的动作类型
+ * @returns 处理结果
+ */
+async function processClickableElement(
+  element: HTMLElement,
+  action: ActionType
+): Promise<ActionResult> {
+  // 实现逻辑...
+}
+```
+
+## 架构原则
+
+### 模块化设计
+- 每个模块都应该有清晰的职责边界
+- 使用依赖注入来管理模块间的依赖关系
+- 避免循环依赖
+
+### 错误处理
+- 使用 Result 模式处理可能失败的操作
+- 提供有意义的错误消息
+- 记录错误日志以便调试
+
+```typescript
+interface Result<T, E = Error> {
+  success: boolean;
+  data?: T;
+  error?: E;
+}
+```
+
+### 异步操作
+- 优先使用 async/await 而不是 Promise.then()
+- 正确处理异步操作的错误
+- 避免阻塞主线程
+
+## AI 代理相关
+
+### 动作系统
+- 所有动作都应该通过 ActionRegistry 注册
+- 动作函数应该是纯函数或有明确的副作用说明
+- 使用描述性的动作名称
+
+```typescript
+@controller.registry.action("在页面中搜索指定文本")
+async function searchText(query: string, page: Document): Promise<ActionResult> {
+  // 实现搜索逻辑
+}
+```
+
+### 内存管理
+- 实现高效的内存管理系统
+- 避免内存泄漏
+- 合理使用缓存
+
+### LLM 集成
+- 支持多种 LLM 模型
+- 提供统一的接口
+- 处理 API 限制和错误
+
+## 性能考虑
+- 避免不必要的 DOM 操作
+- 使用 requestAnimationFrame 进行动画
+- 实现合理的防抖和节流
+- 优化大量数据的处理
+
+## 测试
+- 为核心功能编写单元测试
+- 使用 Vitest 作为测试框架
+- 测试文件命名: `*.test.ts` 或 `*.spec.ts`
+
+## 构建和部署
+- 使用 Vite 进行构建优化
+- 确保构建产物可以在现代浏览器中运行
+- 支持 Tree Shaking
+
+## 安全考虑
+- 验证所有用户输入
+- 避免 XSS 攻击
+- 谨慎处理敏感信息（如 API 密钥）
+
+## 兼容性
+- 支持现代浏览器（Chrome 90+, Firefox 88+, Safari 14+）
+- 使用 Polyfill 处理必要的兼容性问题
+- 优雅降级处理不支持的功能
+
+## 开发工具
+- 使用 ESLint 进行代码检查
+- 使用 Prettier 进行代码格式化
+- 配置 Husky 进行 Git hooks
+
+## 示例代码模板
+
+### 基础类模板
+```typescript
+/**
+ * [类的描述]
+ */
+export class ClassName {
+  private readonly property: Type;
+
+  constructor(config: ConfigType) {
+    this.property = config.property;
+  }
+
+  /**
+   * [方法描述]
+   */
+  public async methodName(param: ParamType): Promise<ReturnType> {
+    try {
+      // 实现逻辑
+      return { success: true, data: result };
+    } catch (error) {
+      console.error('Error in methodName:', error);
+      return { success: false, error };
+    }
+  }
+}
+```
+
+### 动作注册模板
+```typescript
+import { ActionRegistry, ActionResult } from '../controller';
+
+/**
+ * 注册 [功能描述] 相关的动作
+ */
+export function register[Feature]Actions(registry: ActionRegistry): void {
+  registry.action("[动作描述]")
+    .handler(async (param: ParamType): Promise<ActionResult> => {
+      // 实现动作逻辑
+      return {
+        success: true,
+        data: result,
+        extractedContent: content,
+        includeInMemory: true
+      };
+    });
+}
+```
+
+记住：始终优先考虑代码的可读性、可维护性和性能。遵循这些规则将帮助创建一个高质量的 Browser-Use JS 项目。
