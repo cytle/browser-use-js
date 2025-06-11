@@ -787,3 +787,67 @@ export interface IEventEmitter {
 // ============================================================================
 
 // 所有类型已在上方定义并导出，可以直接使用
+
+/**
+ * 交互能力类型
+ */
+export type InteractionCapability =
+  | 'click'
+  | 'type'
+  | 'focus'
+  | 'blur'
+  | 'check'
+  | 'uncheck'
+  | 'select'
+  | 'navigate'
+  | 'drag'
+  | 'context-menu';
+
+/**
+ * 可点击性分析结果
+ */
+export interface ClickabilityAnalysis {
+  /** 是否可点击 */
+  isClickable: boolean;
+  /** 置信度 (0-1) */
+  confidence: number;
+  /** 判断原因 */
+  reasons: string[];
+  /** 警告信息 */
+  warnings: string[];
+}
+
+/**
+ * 可点击元素信息接口
+ */
+export interface ClickableElementInfo extends ElementInfo {
+  /** DOM 元素引用 */
+  element: Element;
+  /** 可点击区域信息 */
+  clickableArea: {
+    width: number;
+    height: number;
+    area: number;
+    center: { x: number; y: number };
+  };
+  /** 交互类型 */
+  interactionType: string;
+  /** 交互能力列表 */
+  capabilities: InteractionCapability[];
+  /** 可访问性信息 */
+  accessibility: {
+    hasLabel: boolean;
+    ariaLabel?: string;
+    ariaDescribedBy?: string;
+    tabIndex?: number;
+    role?: string;
+  };
+  /** 检测到的框架 */
+  framework?: string;
+  /** 是否可见 */
+  visible: boolean;
+  /** 是否启用 */
+  enabled: boolean;
+  /** 可点击性分析结果 */
+  analysis: ClickabilityAnalysis;
+}
