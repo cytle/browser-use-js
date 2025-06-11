@@ -126,6 +126,94 @@ export interface DOMProcessorConfig extends BaseConfig {
   includeShadowDOM?: boolean;
 }
 
+/**
+ * DOM 核心处理器选项
+ */
+export interface ProcessorOptions {
+  /** 最大遍历深度 */
+  maxDepth: number;
+  /** 是否启用缓存 */
+  enableCache: boolean;
+  /** 是否包含 Shadow DOM */
+  includeShadowDOM: boolean;
+  /** 性能模式（跳过一些昂贵的检查） */
+  performanceMode: boolean;
+}
+
+/**
+ * 元素信息接口
+ */
+export interface ElementInfo {
+  /** 元素标签名 */
+  tagName: string;
+  /** 元素 ID */
+  id?: string;
+  /** CSS 类名 */
+  className?: string;
+  /** 元素文本内容 */
+  textContent?: string;
+  /** 是否可见 */
+  visible: boolean;
+  /** 是否可交互 */
+  interactive: boolean;
+  /** CSS 选择器 */
+  selector: string;
+  /** 元素位置信息 */
+  position: Rectangle;
+  /** 相关属性 */
+  attributes: Record<string, string>;
+  /** ARIA 角色 */
+  role: string;
+  /** ARIA 标签 */
+  ariaLabel?: string;
+}
+
+/**
+ * 选择器信息接口
+ */
+export interface SelectorInfo {
+  /** CSS 选择器 */
+  selector: string;
+  /** 选择器类型 */
+  type: 'id' | 'class' | 'attribute' | 'path' | 'xpath';
+  /** 选择器优先级 */
+  priority: number;
+  /** 是否唯一 */
+  unique: boolean;
+}
+
+/**
+ * DOM 分析结果接口
+ */
+export interface DOMAnalysisResult {
+  /** 总元素数量 */
+  totalElements: number;
+  /** 可交互元素数量 */
+  interactiveElements: number;
+  /** 可见元素数量 */
+  visibleElements: number;
+  /** 所有元素信息 */
+  elements: ElementInfo[];
+  /** 页面结构分析 */
+  structure: PageStructure;
+  /** 处理时间（毫秒） */
+  processingTime: number;
+}
+
+/**
+ * 页面结构接口
+ */
+export interface PageStructure {
+  /** 页面地标 */
+  landmarks: ElementInfo[];
+  /** 标题元素 */
+  headings: ElementInfo[];
+  /** 表单元素 */
+  forms: ElementInfo[];
+  /** 导航元素 */
+  navigation: ElementInfo[];
+}
+
 // ============================================================================
 // 浏览器交互类型
 // ============================================================================
