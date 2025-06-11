@@ -5,22 +5,22 @@
  * 用户通过这个文件来使用 Browser-Use JS 的所有功能。
  */
 
-import './style.css';
-import typescriptLogo from './typescript.svg';
-import viteLogo from '/vite.svg';
-import { setupCounter } from './counter.ts';
+// 导入类型定义
+import { TYPES_MODULE_VERSION } from './types';
+import type {
+  Result,
+  BaseConfig,
+  AgentConfig,
+  AgentStatus,
+  BrowserConfig,
+  ActionResult,
+} from './types';
 
-// 导入所有模块
-import { AGENT_MODULE_VERSION } from '@agent';
-import type { AgentConfig, AgentStatus } from '@agent';
-import { BROWSER_MODULE_VERSION } from '@browser';
-import type { BrowserConfig } from '@browser';
-import { CONTROLLER_MODULE_VERSION } from '@controller';
-import type { ActionResult } from '@controller';
-import { DOM_MODULE_VERSION } from '@dom';
-import type { ElementInfo } from '@dom';
-import { TYPES_MODULE_VERSION } from '@types';
-import type { Result, BaseConfig } from '@types';
+// 临时版本常量（将在后续任务中从各模块导入）
+const AGENT_MODULE_VERSION = '0.1.0';
+const BROWSER_MODULE_VERSION = '0.1.0';
+const CONTROLLER_MODULE_VERSION = '0.1.0';
+const DOM_MODULE_VERSION = '0.1.0';
 
 /**
  * Browser-Use JS 版本信息
@@ -46,7 +46,6 @@ export type {
   AgentStatus,
   BrowserConfig,
   ActionResult,
-  ElementInfo,
   Result,
   BaseConfig,
 };
@@ -77,6 +76,10 @@ export async function initialize(
       console.log('🔧 调试模式已启用');
     }
 
+    if (config.timeout) {
+      console.log(`⏱️ 超时时间设置为: ${config.timeout}ms`);
+    }
+
     // TODO: 在后续任务中实现具体的初始化逻辑
     // - 初始化 AI 代理
     // - 设置浏览器控制器
@@ -97,8 +100,19 @@ export async function initialize(
   }
 }
 
-// 开发环境下的演示代码
-if (import.meta.env.DEV) {
+/**
+ * 获取 Browser-Use JS 版本信息
+ * @returns 版本信息对象
+ */
+export function getVersionInfo() {
+  return {
+    version: VERSION,
+    modules: MODULE_VERSIONS,
+  };
+}
+
+// 开发环境下的自动初始化
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
   console.log('🔧 开发模式已启用');
 
   // 显示模块版本信息
@@ -106,6 +120,7 @@ if (import.meta.env.DEV) {
 
   // 自动初始化（开发环境）
   initialize({
+    debug: true,
     timeout: 30000,
   }).then(result => {
     if (result.success) {
@@ -115,23 +130,3 @@ if (import.meta.env.DEV) {
     }
   });
 }
-
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://www.typescriptlang.org/" target="_blank">
-      <img src="${typescriptLogo}" class="logo vanilla" alt="TypeScript logo" />
-    </a>
-    <h1>Vite + TypeScript</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite and TypeScript logos to learn more
-    </p>
-  </div>
-`;
-
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!);

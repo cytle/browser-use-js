@@ -38,11 +38,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
-      '@agent': resolve(__dirname, 'src/agent'),
-      '@browser': resolve(__dirname, 'src/browser'),
-      '@controller': resolve(__dirname, 'src/controller'),
-      '@dom': resolve(__dirname, 'src/dom'),
-      '@types': resolve(__dirname, 'src/types'),
     },
   },
 
