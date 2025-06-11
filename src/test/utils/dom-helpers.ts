@@ -22,13 +22,49 @@ export function createMockElement(
 
   // 设置属性
   Object.entries(attributes).forEach(([key, value]) => {
-    element.setAttribute(key, value);
+    if (key === 'innerHTML') {
+      element.innerHTML = value;
+    } else if (key === 'style') {
+      element.setAttribute('style', value);
+    } else if (key === 'className') {
+      element.className = value;
+    } else if (key === 'id') {
+      element.id = value;
+    } else {
+      element.setAttribute(key, value);
+    }
   });
 
   // 设置文本内容
   if (textContent) {
     element.textContent = textContent;
   }
+
+  // 确保元素有默认的 getBoundingClientRect 方法
+  if (!element.getBoundingClientRect) {
+    element.getBoundingClientRect = () =>
+      ({
+        x: 0,
+        y: 0,
+        width: 100,
+        height: 100,
+        top: 0,
+        left: 0,
+        bottom: 100,
+        right: 100,
+        toJSON: () => ({}),
+      }) as DOMRect;
+  }
+
+  // 设置默认的 offsetWidth 和 offsetHeight
+  Object.defineProperty(element, 'offsetWidth', {
+    get: () => 100,
+    configurable: true,
+  });
+  Object.defineProperty(element, 'offsetHeight', {
+    get: () => 100,
+    configurable: true,
+  });
 
   return element;
 }
@@ -288,6 +324,37 @@ export function cleanupDOM(): void {
 export function createTestHTML(html: string): HTMLElement {
   const container = document.createElement('div');
   container.innerHTML = html;
+
+  // 确保所有子元素都有正确的 DOM 方法
+  const allElements = container.querySelectorAll('*');
+  allElements.forEach(element => {
+    // 确保每个元素都有 getBoundingClientRect 方法
+    if (!element.getBoundingClientRect) {
+      (element as HTMLElement).getBoundingClientRect = () =>
+        ({
+          x: 0,
+          y: 0,
+          width: 100,
+          height: 100,
+          top: 0,
+          left: 0,
+          bottom: 100,
+          right: 100,
+          toJSON: () => ({}),
+        }) as DOMRect;
+    }
+
+    // 设置默认的 offset 属性
+    Object.defineProperty(element, 'offsetWidth', {
+      get: () => 100,
+      configurable: true,
+    });
+    Object.defineProperty(element, 'offsetHeight', {
+      get: () => 100,
+      configurable: true,
+    });
+  });
+
   document.body.appendChild(container);
   return container;
 }

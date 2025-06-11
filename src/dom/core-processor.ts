@@ -41,7 +41,6 @@ export class DOMCoreProcessor {
   public analyzeDOMTree(
     root: Element = document.documentElement
   ): DOMAnalysisResult {
-    // eslint-disable-next-line no-undef
     const startTime =
       typeof performance !== 'undefined' ? performance.now() : Date.now();
 
@@ -56,7 +55,6 @@ export class DOMCoreProcessor {
         visibleElements: visibleElements.length,
         elements,
         structure: this.analyzeStructure(root),
-        // eslint-disable-next-line no-undef
         processingTime:
           (typeof performance !== 'undefined'
             ? performance.now()
@@ -201,13 +199,15 @@ export class DOMCoreProcessor {
         }
 
         // 添加 nth-child 以确保唯一性
-        const siblings = Array.from(
-          current.parentElement?.children || []
-        ).filter(sibling => sibling.tagName === current!.tagName);
+        if (current.parentElement) {
+          const siblings = Array.from(current.parentElement.children).filter(
+            sibling => sibling.tagName === current!.tagName
+          );
 
-        if (siblings.length > 1) {
-          const index = siblings.indexOf(current) + 1;
-          selectorPart += `:nth-child(${index})`;
+          if (siblings.length > 1) {
+            const index = siblings.indexOf(current) + 1;
+            selectorPart += `:nth-child(${index})`;
+          }
         }
 
         path.unshift(selectorPart);
@@ -217,12 +217,14 @@ export class DOMCoreProcessor {
       selector = path.join(' > ');
     }
 
-    // 验证选择器的唯一性
+    // 验证选择器的唯一性（仅在元素在 DOM 中时）
     try {
-      const found = document.querySelectorAll(selector);
-      if (found.length !== 1 || found[0] !== element) {
-        // 如果选择器不唯一，添加更多特征
-        selector = this.generateFallbackSelector(element);
+      if (document.contains(element)) {
+        const found = document.querySelectorAll(selector);
+        if (found.length !== 1 || found[0] !== element) {
+          // 如果选择器不唯一，添加更多特征
+          selector = this.generateFallbackSelector(element);
+        }
       }
     } catch (error) {
       console.warn('选择器验证失败:', selector, error);
@@ -279,12 +281,18 @@ export class DOMCoreProcessor {
 
     while (current && current !== document.documentElement) {
       const tagName = current.tagName.toLowerCase();
-      const siblings = Array.from(current.parentElement?.children || []).filter(
-        sibling => sibling.tagName === current!.tagName
-      );
 
-      const index = siblings.indexOf(current) + 1;
-      path.unshift(`${tagName}:nth-of-type(${index})`);
+      if (current.parentElement) {
+        const siblings = Array.from(current.parentElement.children).filter(
+          sibling => sibling.tagName === current!.tagName
+        );
+
+        const index = siblings.indexOf(current) + 1;
+        path.unshift(`${tagName}:nth-of-type(${index})`);
+      } else {
+        path.unshift(tagName);
+      }
+
       current = current.parentElement;
     }
 

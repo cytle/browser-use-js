@@ -21,6 +21,8 @@ export default [
         document: 'readonly',
         navigator: 'readonly',
         console: 'readonly',
+        performance: 'readonly',
+        CSS: 'readonly',
         // Node.js 环境全局变量
         global: 'readonly',
         process: 'readonly',
@@ -71,6 +73,8 @@ export default [
         document: 'readonly',
         navigator: 'readonly',
         console: 'readonly',
+        performance: 'readonly',
+        CSS: 'readonly',
         // Node.js 环境全局变量
         global: 'readonly',
         globalThis: 'writable',

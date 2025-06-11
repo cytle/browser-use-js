@@ -4,7 +4,7 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { DOMCoreProcessor } from './core-processor';
-import { createMockElement } from '../test/utils/dom-helpers';
+import { createMockElement, createTestHTML } from '../test/utils/dom-helpers';
 
 describe('DOMCoreProcessor', () => {
   let processor: DOMCoreProcessor;
@@ -62,15 +62,13 @@ describe('DOMCoreProcessor', () => {
     });
 
     it('应该正确识别交互元素', () => {
-      const container = createMockElement('div', {
-        innerHTML: `
-          <button>按钮</button>
-          <input type="text" />
-          <a href="#">链接</a>
-          <div>普通文本</div>
-          <span onclick="test()">可点击文本</span>
-        `,
-      });
+      const container = createTestHTML(`
+        <button>按钮</button>
+        <input type="text" />
+        <a href="#">链接</a>
+        <div>普通文本</div>
+        <span onclick="test()">可点击文本</span>
+      `);
 
       const result = processor.analyzeDOMTree(container);
       const interactiveElements = result.elements.filter(el => el.interactive);
@@ -103,9 +101,9 @@ describe('DOMCoreProcessor', () => {
     });
 
     it('应该为没有 ID 的元素生成路径选择器', () => {
-      const container = createMockElement('div', {
-        innerHTML: '<section><article><p>测试文本</p></article></section>',
-      });
+      const container = createTestHTML(
+        '<section><article><p>测试文本</p></article></section>'
+      );
 
       const paragraph = container.querySelector('p')!;
       const selector = processor.generateSelector(paragraph);
@@ -185,15 +183,13 @@ describe('DOMCoreProcessor', () => {
 
   describe('页面结构分析', () => {
     it('应该识别页面地标', () => {
-      const container = createMockElement('div', {
-        innerHTML: `
-          <header>页头</header>
-          <nav>导航</nav>
-          <main>主内容</main>
-          <aside>侧边栏</aside>
-          <footer>页脚</footer>
-        `,
-      });
+      const container = createTestHTML(`
+        <header>页头</header>
+        <nav>导航</nav>
+        <main>主内容</main>
+        <aside>侧边栏</aside>
+        <footer>页脚</footer>
+      `);
 
       const result = processor.analyzeDOMTree(container);
 
@@ -208,14 +204,12 @@ describe('DOMCoreProcessor', () => {
     });
 
     it('应该识别标题层次结构', () => {
-      const container = createMockElement('div', {
-        innerHTML: `
-          <h1>一级标题</h1>
-          <h2>二级标题</h2>
-          <h3>三级标题</h3>
-          <h2>另一个二级标题</h2>
-        `,
-      });
+      const container = createTestHTML(`
+        <h1>一级标题</h1>
+        <h2>二级标题</h2>
+        <h3>三级标题</h3>
+        <h2>另一个二级标题</h2>
+      `);
 
       const result = processor.analyzeDOMTree(container);
 
@@ -228,18 +222,16 @@ describe('DOMCoreProcessor', () => {
     });
 
     it('应该识别表单元素', () => {
-      const container = createMockElement('div', {
-        innerHTML: `
-          <form id="form1">
-            <input type="text" name="username" />
-            <input type="password" name="password" />
-            <button type="submit">提交</button>
-          </form>
-          <form id="form2">
-            <textarea name="comment"></textarea>
-          </form>
-        `,
-      });
+      const container = createTestHTML(`
+        <form id="form1">
+          <input type="text" name="username" />
+          <input type="password" name="password" />
+          <button type="submit">提交</button>
+        </form>
+        <form id="form2">
+          <textarea name="comment"></textarea>
+        </form>
+      `);
 
       const result = processor.analyzeDOMTree(container);
 
