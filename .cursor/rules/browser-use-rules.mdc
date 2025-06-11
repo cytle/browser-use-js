@@ -20,6 +20,10 @@ Browser-Use JS 是 Browser-Use 的纯浏览器版本 JavaScript 复刻，让 AI 
 
 遵循 Conventional Commits 规范。
 
+## 项目记忆管理
+
+
+
 ## 项目结构
 ```
 src/

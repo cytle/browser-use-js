@@ -1,5 +1,5 @@
 ---
-description: 任务管理
+description: 任务管理，所有和任务有关的指令都需要匹配
 globs:
 alwaysApply: false
 ---
