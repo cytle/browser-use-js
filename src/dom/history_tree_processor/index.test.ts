@@ -77,7 +77,7 @@ describe('HistoryTreeProcessor', () => {
       // 等待初始快照创建
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      let stats = processor.getStats();
+      const stats = processor.getStats();
       console.log(
         '初始状态 - 节点数:',
         stats.totalNodes,

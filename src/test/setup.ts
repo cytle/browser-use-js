@@ -90,7 +90,7 @@ vi.setConfig({
 
 // 全局测试工具函数
 declare global {
-  var createMockElement: (
+  const createMockElement: (
     tagName: string,
     attributes?: Record<string, string>
   ) => HTMLElement;
