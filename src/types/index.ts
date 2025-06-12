@@ -783,6 +783,231 @@ export interface IEventEmitter {
 }
 
 // ============================================================================
+// 历史树处理器相关类型
+// ============================================================================
+
+/**
+ * DOM 变更类型
+ */
+export enum DOMChangeType {
+  /** 节点添加 */
+  NODE_ADDED = 'node_added',
+  /** 节点移除 */
+  NODE_REMOVED = 'node_removed',
+  /** 属性变更 */
+  ATTRIBUTE_CHANGED = 'attribute_changed',
+  /** 文本内容变更 */
+  TEXT_CHANGED = 'text_changed',
+  /** 样式变更 */
+  STYLE_CHANGED = 'style_changed',
+}
+
+/**
+ * DOM 变更记录
+ */
+export interface DOMChangeRecord {
+  /** 变更 ID */
+  id: string;
+  /** 变更类型 */
+  type: DOMChangeType;
+  /** 目标元素选择器 */
+  targetSelector: string;
+  /** 变更时间戳 */
+  timestamp: number;
+  /** 变更前的值 */
+  oldValue?: string;
+  /** 变更后的值 */
+  newValue?: string;
+  /** 变更的属性名（仅属性变更时） */
+  attributeName?: string;
+  /** 相关的父元素选择器 */
+  parentSelector?: string;
+  /** 变更描述 */
+  description?: string;
+}
+
+/**
+ * DOM 状态快照
+ */
+export interface DOMSnapshot {
+  /** 快照 ID */
+  id: string;
+  /** 快照时间戳 */
+  timestamp: number;
+  /** 快照描述 */
+  description?: string;
+  /** 页面 URL */
+  url: string;
+  /** 页面标题 */
+  title: string;
+  /** DOM 结构哈希 */
+  structureHash: string;
+  /** 关键元素状态 */
+  keyElements: Array<{
+    selector: string;
+    tagName: string;
+    attributes: Record<string, string>;
+    textContent?: string;
+    visible: boolean;
+  }>;
+  /** 快照大小（字节） */
+  size: number;
+}
+
+/**
+ * 历史树节点
+ */
+export interface HistoryTreeNode {
+  /** 节点 ID */
+  id: string;
+  /** 父节点 ID */
+  parentId?: string;
+  /** 子节点 ID 列表 */
+  childrenIds: string[];
+  /** 关联的快照 */
+  snapshot: DOMSnapshot;
+  /** 导致此状态的变更记录 */
+  changes: DOMChangeRecord[];
+  /** 节点深度 */
+  depth: number;
+  /** 是否为叶子节点 */
+  isLeaf: boolean;
+}
+
+/**
+ * 历史树配置
+ */
+export interface HistoryTreeConfig extends BaseConfig {
+  /** 最大历史记录数 */
+  maxHistorySize?: number;
+  /** 最大快照数 */
+  maxSnapshots?: number;
+  /** 自动清理阈值 */
+  autoCleanupThreshold?: number;
+  /** 是否启用压缩 */
+  enableCompression?: boolean;
+  /** 快照间隔（毫秒） */
+  snapshotInterval?: number;
+  /** 是否监听所有变更 */
+  observeAllChanges?: boolean;
+  /** 忽略的元素选择器 */
+  ignoreSelectors?: string[];
+}
+
+/**
+ * 历史树统计信息
+ */
+export interface HistoryTreeStats {
+  /** 总节点数 */
+  totalNodes: number;
+  /** 总快照数 */
+  totalSnapshots: number;
+  /** 总变更记录数 */
+  totalChanges: number;
+  /** 内存使用量（字节） */
+  memoryUsage: number;
+  /** 最早记录时间 */
+  earliestTimestamp: number;
+  /** 最新记录时间 */
+  latestTimestamp: number;
+  /** 平均节点深度 */
+  averageDepth: number;
+}
+
+/**
+ * 回滚选项
+ */
+export interface RollbackOptions {
+  /** 目标快照 ID 或时间戳 */
+  target: string | number;
+  /** 是否验证回滚 */
+  validate?: boolean;
+  /** 回滚超时时间 */
+  timeout?: number;
+  /** 是否创建回滚前快照 */
+  createSnapshot?: boolean;
+}
+
+/**
+ * 回滚结果
+ */
+export interface RollbackResult {
+  /** 回滚是否成功 */
+  success: boolean;
+  /** 目标快照 */
+  targetSnapshot?: DOMSnapshot;
+  /** 回滚前快照 */
+  beforeSnapshot?: DOMSnapshot;
+  /** 应用的变更数量 */
+  appliedChanges: number;
+  /** 回滚耗时（毫秒） */
+  duration: number;
+  /** 错误信息 */
+  error?: string;
+}
+
+/**
+ * 历史树处理器接口
+ */
+export interface IHistoryTreeProcessor {
+  /**
+   * 开始监听 DOM 变更
+   */
+  startObserving(): void;
+
+  /**
+   * 停止监听 DOM 变更
+   */
+  stopObserving(): void;
+
+  /**
+   * 创建当前状态快照
+   * @param description 快照描述
+   */
+  createSnapshot(description?: string): Promise<DOMSnapshot>;
+
+  /**
+   * 获取历史记录
+   * @param limit 限制数量
+   */
+  getHistory(limit?: number): HistoryTreeNode[];
+
+  /**
+   * 获取指定快照
+   * @param snapshotId 快照 ID
+   */
+  getSnapshot(snapshotId: string): DOMSnapshot | undefined;
+
+  /**
+   * 回滚到指定状态
+   * @param options 回滚选项
+   */
+  rollback(options: RollbackOptions): Promise<RollbackResult>;
+
+  /**
+   * 清理历史记录
+   * @param beforeTimestamp 清理此时间戳之前的记录
+   */
+  cleanup(beforeTimestamp?: number): Promise<void>;
+
+  /**
+   * 获取统计信息
+   */
+  getStats(): HistoryTreeStats;
+
+  /**
+   * 导出历史数据
+   */
+  exportHistory(): Promise<string>;
+
+  /**
+   * 导入历史数据
+   * @param data 历史数据
+   */
+  importHistory(data: string): Promise<void>;
+}
+
+// ============================================================================
 // 类型定义完成
 // ============================================================================
 
