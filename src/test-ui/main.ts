@@ -2,8 +2,9 @@
  * @file purpose: 测试UI界面的交互逻辑
  */
 
-import { initialize, getVersionInfo } from './main';
-import type { BrowserUseConfig } from './main';
+import './index.css';
+import { initialize, getVersionInfo } from '../main';
+import type { BrowserUseConfig } from '../main';
 
 // 全局状态管理
 interface TestState {
@@ -19,7 +20,10 @@ const testState: TestState = {
 };
 
 // 日志管理
-function addLog(message: string, type: 'info' | 'success' | 'error' | 'warning' = 'info') {
+function addLog(
+  message: string,
+  type: 'info' | 'success' | 'error' | 'warning' = 'info'
+) {
   const timestamp = new Date().toLocaleTimeString();
   const logMessage = `[${timestamp}] ${message}`;
   testState.logs.push(logMessage);
@@ -39,10 +43,19 @@ function addLog(message: string, type: 'info' | 'success' | 'error' | 'warning' 
 }
 
 // 更新状态指示器
-function updateStatusIndicator(elementId: string, status: 'success' | 'error' | 'pending', message: string) {
+function updateStatusIndicator(
+  elementId: string,
+  status: 'success' | 'error' | 'pending',
+  message: string
+) {
   const element = document.getElementById(elementId);
   if (element) {
-    const statusClass = status === 'success' ? 'success' : status === 'error' ? 'error' : 'pending';
+    const statusClass =
+      status === 'success'
+        ? 'success'
+        : status === 'error'
+          ? 'error'
+          : 'pending';
     element.innerHTML = `<span class="status-indicator ${statusClass}"></span>${message}`;
   }
 }
@@ -53,8 +66,13 @@ async function testInitialization() {
   updateStatusIndicator('init-status', 'pending', '正在初始化...');
 
   try {
-    const debugMode = (document.getElementById('debug-mode') as HTMLSelectElement)?.value === 'true';
-    const timeout = parseInt((document.getElementById('timeout-input') as HTMLInputElement)?.value || '30000');
+    const debugMode =
+      (document.getElementById('debug-mode') as HTMLSelectElement)?.value ===
+      'true';
+    const timeout = parseInt(
+      (document.getElementById('timeout-input') as HTMLInputElement)?.value ||
+        '30000'
+    );
 
     const config: BrowserUseConfig = {
       debug: debugMode,
@@ -106,8 +124,12 @@ async function testDOMProcessing() {
   updateStatusIndicator('dom-results', 'pending', '正在扫描DOM元素...');
 
   try {
-    const clickableElements = document.querySelectorAll('button, a, input[type="button"], input[type="submit"], [onclick]');
-    const interactiveElements = document.querySelectorAll('input, select, textarea');
+    const clickableElements = document.querySelectorAll(
+      'button, a, input[type="button"], input[type="submit"], [onclick]'
+    );
+    const interactiveElements = document.querySelectorAll(
+      'input, select, textarea'
+    );
 
     const results = {
       clickableCount: clickableElements.length,
@@ -115,9 +137,15 @@ async function testDOMProcessing() {
       totalElements: document.querySelectorAll('*').length,
     };
 
-    addLog(`✅ DOM扫描完成: 可点击元素(${results.clickableCount}) 交互元素(${results.interactiveCount}) 总元素(${results.totalElements})`, 'success');
-    updateStatusIndicator('dom-results', 'success', `找到 ${results.clickableCount} 个可点击元素`);
-
+    addLog(
+      `✅ DOM扫描完成: 可点击元素(${results.clickableCount}) 交互元素(${results.interactiveCount}) 总元素(${results.totalElements})`,
+      'success'
+    );
+    updateStatusIndicator(
+      'dom-results',
+      'success',
+      `找到 ${results.clickableCount} 个可点击元素`
+    );
   } catch (error) {
     addLog(`❌ DOM处理测试失败: ${error}`, 'error');
     updateStatusIndicator('dom-results', 'error', 'DOM处理失败');
@@ -143,7 +171,10 @@ function testElementHighlight() {
       element.style.outline = '3px solid #667eea';
       element.style.backgroundColor = 'rgba(102, 126, 234, 0.1)';
 
-      addLog(`🎯 高亮元素: ${element.tagName} [${element.getAttribute('data-testid')}]`, 'info');
+      addLog(
+        `🎯 高亮元素: ${element.tagName} [${element.getAttribute('data-testid')}]`,
+        'info'
+      );
       index++;
 
       setTimeout(highlightNext, 1000);
@@ -186,8 +217,10 @@ function testHistoryTree() {
     const stats = getTreeStats(tree);
 
     addLog(`✅ 历史树生成完成，深度: ${maxDepth}`, 'success');
-    addLog(`📊 树结构统计: 节点数(${stats.nodeCount}) 最大深度(${stats.maxDepth})`, 'info');
-
+    addLog(
+      `📊 树结构统计: 节点数(${stats.nodeCount}) 最大深度(${stats.maxDepth})`,
+      'info'
+    );
   } catch (error) {
     addLog(`❌ 历史树生成失败: ${error}`, 'error');
   }
@@ -220,7 +253,9 @@ async function testNavigation() {
   updateStatusIndicator('browser-status', 'pending', '正在测试导航...');
 
   try {
-    const targetUrl = (document.getElementById('target-url') as HTMLInputElement)?.value;
+    const targetUrl = (
+      document.getElementById('target-url') as HTMLInputElement
+    )?.value;
 
     if (!targetUrl) {
       throw new Error('请输入目标URL');
@@ -231,7 +266,6 @@ async function testNavigation() {
 
     addLog('✅ URL格式验证通过', 'success');
     updateStatusIndicator('browser-status', 'success', '导航测试完成');
-
   } catch (error) {
     addLog(`❌ 导航测试失败: ${error}`, 'error');
     updateStatusIndicator('browser-status', 'error', '导航测试失败');
@@ -258,11 +292,17 @@ async function testScreenshot() {
     ctx.fillStyle = 'white';
     ctx.font = '24px Arial';
     ctx.textAlign = 'center';
-    ctx.fillText('Browser-Use JS 截图测试', canvas.width / 2, canvas.height / 2);
+    ctx.fillText(
+      'Browser-Use JS 截图测试',
+      canvas.width / 2,
+      canvas.height / 2
+    );
 
     const dataUrl = canvas.toDataURL('image/png');
-    addLog(`✅ 截图生成成功，大小: ${Math.round(dataUrl.length / 1024)}KB`, 'success');
-
+    addLog(
+      `✅ 截图生成成功，大小: ${Math.round(dataUrl.length / 1024)}KB`,
+      'success'
+    );
   } catch (error) {
     addLog(`❌ 截图测试失败: ${error}`, 'error');
   }
@@ -274,7 +314,9 @@ async function testAgentTask() {
   updateStatusIndicator('agent-status', 'pending', '正在执行任务...');
 
   try {
-    const taskInput = (document.getElementById('task-input') as HTMLTextAreaElement)?.value;
+    const taskInput = (
+      document.getElementById('task-input') as HTMLTextAreaElement
+    )?.value;
 
     if (!taskInput.trim()) {
       throw new Error('请输入任务描述');
@@ -297,7 +339,6 @@ async function testAgentTask() {
 
     addLog('✅ AI代理任务执行完成', 'success');
     updateStatusIndicator('agent-status', 'success', '任务执行成功');
-
   } catch (error) {
     addLog(`❌ AI代理任务失败: ${error}`, 'error');
     updateStatusIndicator('agent-status', 'error', '任务执行失败');
@@ -324,7 +365,6 @@ async function testAgentMemory() {
     if (retrievedMemory) {
       addLog('🔍 记忆检索成功', 'success');
     }
-
   } catch (error) {
     addLog(`❌ 代理记忆测试失败: ${error}`, 'error');
   }
@@ -344,7 +384,11 @@ function listAvailableActions() {
     { name: 'extract', description: '提取内容' },
   ];
 
-  updateStatusIndicator('action-results', 'success', `找到 ${mockActions.length} 个可用动作`);
+  updateStatusIndicator(
+    'action-results',
+    'success',
+    `找到 ${mockActions.length} 个可用动作`
+  );
 
   mockActions.forEach(action => {
     addLog(`🔧 ${action.name}: ${action.description}`, 'info');
@@ -368,14 +412,16 @@ function startPerformanceMonitoring() {
   const updateMetrics = () => {
     try {
       const memoryUsage = Math.round(Math.random() * 50 + 20);
-      document.getElementById('memory-usage')!.textContent = memoryUsage.toString();
+      document.getElementById('memory-usage')!.textContent =
+        memoryUsage.toString();
 
       const domElements = document.querySelectorAll('*').length;
-      document.getElementById('dom-elements')!.textContent = domElements.toString();
+      document.getElementById('dom-elements')!.textContent =
+        domElements.toString();
 
       const responseTime = Math.round(Math.random() * 100 + 50);
-      document.getElementById('response-time')!.textContent = responseTime.toString();
-
+      document.getElementById('response-time')!.textContent =
+        responseTime.toString();
     } catch (error) {
       addLog(`❌ 性能指标更新失败: ${error}`, 'error');
     }
@@ -459,13 +505,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // 添加演示元素的事件监听器
   const demoElements = document.querySelectorAll('[data-testid]');
   demoElements.forEach(element => {
-    element.addEventListener('click', (e) => {
+    element.addEventListener('click', e => {
       const testId = (e.target as HTMLElement).getAttribute('data-testid');
       addLog(`🎯 用户点击了演示元素: ${testId}`, 'info');
     });
 
     if (element.tagName === 'INPUT') {
-      element.addEventListener('input', (e) => {
+      element.addEventListener('input', e => {
         const testId = (e.target as HTMLElement).getAttribute('data-testid');
         const value = (e.target as HTMLInputElement).value;
         addLog(`✏️ 用户在 ${testId} 中输入: ${value}`, 'info');
