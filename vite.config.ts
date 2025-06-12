@@ -1,12 +1,15 @@
 import { defineConfig } from 'vite';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 
 // 在 ES 模块中获取 __dirname 的等价物
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export default defineConfig({
+  plugins: [tailwindcss(), react()],
   // 开发服务器配置
   server: {
     port: 3000,
