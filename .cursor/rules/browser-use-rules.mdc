@@ -32,9 +32,10 @@ Browser-Use JS 是 Browser-Use 的纯浏览器版本 JavaScript 复刻，让 AI 
 ### UI 组件 (测试界面)
 - **框架**: React 19
 - **样式**: Tailwind CSS 4.x
-- **组件库**: Radix UI
+- **组件库**: Shadcn UI (**如果需要新增组件请使用 shadcn cli，如 pnpm dlx shadcn@latest add button**)
 - **图标**: Lucide React
 - **动画**: tw-animate-css
+
 
 ### 开发工具
 - **代码检查**: ESLint 9.x
@@ -347,8 +348,8 @@ export class AIAgent {
 ### 测试 UI 组件模板
 ```typescript
 import React from 'react';
-import { Button } from './ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Button } from '@/test-ui/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@test-ui/components/ui/card';
 
 interface TestComponentProps {
   title: string;
