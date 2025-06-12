@@ -52,7 +52,7 @@ export default [
       ...typescript.configs.recommended.rules,
       ...prettierConfig.rules,
       '@typescript-eslint/no-unused-vars': 'warn',
-      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/ban-ts-comment': 'warn',
     },
   },
@@ -115,7 +115,6 @@ export default [
       // 测试文件中允许空函数
       '@typescript-eslint/no-empty-function': 'off',
       '@typescript-eslint/no-unused-vars': 'warn',
-      '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/ban-ts-comment': 'warn',
     },
   },

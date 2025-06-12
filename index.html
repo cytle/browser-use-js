@@ -1,13 +1,401 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + TS</title>
+    <title>Browser-Use JS - 功能测试页面</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        color: #333;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 40px;
+        color: white;
+      }
+
+      .header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      }
+
+      .header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+      }
+
+      .version-info {
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 30px;
+        color: white;
+      }
+
+      .test-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .test-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .test-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+      }
+
+      .test-card h3 {
+        color: #4a5568;
+        margin-bottom: 15px;
+        font-size: 1.3rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .test-card .icon {
+        font-size: 1.5rem;
+      }
+
+      .btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        margin: 5px;
+        min-width: 120px;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .btn:active {
+        transform: translateY(0);
+      }
+
+      .btn.secondary {
+        background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+      }
+
+      .btn.danger {
+        background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+      }
+
+      .input-group {
+        margin: 15px 0;
+      }
+
+      .input-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #4a5568;
+      }
+
+      .input-group input,
+      .input-group textarea,
+      .input-group select {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+      }
+
+      .input-group input:focus,
+      .input-group textarea:focus,
+      .input-group select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      .status-indicator {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 8px;
+      }
+
+      .status-indicator.success {
+        background: #48bb78;
+      }
+
+      .status-indicator.error {
+        background: #f56565;
+      }
+
+      .status-indicator.pending {
+        background: #ed8936;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
+      }
+
+      .log-area {
+        background: #1a202c;
+        color: #e2e8f0;
+        padding: 15px;
+        border-radius: 8px;
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        font-size: 0.9rem;
+        max-height: 200px;
+        overflow-y: auto;
+        margin-top: 15px;
+        white-space: pre-wrap;
+      }
+
+      .demo-elements {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-top: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      }
+
+      .demo-elements h3 {
+        color: #4a5568;
+        margin-bottom: 20px;
+        font-size: 1.3rem;
+      }
+
+      .element-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+      }
+
+      .demo-button {
+        padding: 10px 20px;
+        border: 2px solid #667eea;
+        background: white;
+        color: #667eea;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .demo-button:hover {
+        background: #667eea;
+        color: white;
+      }
+
+      .demo-input {
+        padding: 8px 12px;
+        border: 2px solid #e2e8f0;
+        border-radius: 6px;
+        width: 100%;
+      }
+
+      .demo-checkbox {
+        margin-right: 8px;
+      }
+
+      .performance-metrics {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+      }
+
+      .metric-card {
+        background: #f7fafc;
+        padding: 15px;
+        border-radius: 8px;
+        text-align: center;
+      }
+
+      .metric-value {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #667eea;
+      }
+
+      .metric-label {
+        font-size: 0.9rem;
+        color: #718096;
+        margin-top: 5px;
+      }
+    </style>
   </head>
   <body>
-    <div id="app"></div>
+    <div class="container">
+      <div class="header">
+        <h1>🤖 Browser-Use JS</h1>
+        <p>AI 代理浏览器自动化测试平台</p>
+      </div>
+
+      <div class="version-info">
+        <div id="version-display">
+          <span class="status-indicator pending"></span>
+          正在加载版本信息...
+        </div>
+      </div>
+
+      <div class="test-grid">
+        <!-- 初始化测试 -->
+        <div class="test-card">
+          <h3><span class="icon">🚀</span>系统初始化</h3>
+          <p>测试 Browser-Use JS 的初始化功能</p>
+          <div class="input-group">
+            <label>调试模式</label>
+            <select id="debug-mode">
+              <option value="true">启用</option>
+              <option value="false">禁用</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>超时时间 (ms)</label>
+            <input type="number" id="timeout-input" value="30000" min="1000" max="120000">
+          </div>
+          <button class="btn" onclick="testInitialization()">初始化系统</button>
+          <button class="btn secondary" onclick="getVersionInfo()">获取版本信息</button>
+          <div id="init-status"></div>
+        </div>
+
+        <!-- DOM 处理测试 -->
+        <div class="test-card">
+          <h3><span class="icon">🔍</span>DOM 处理</h3>
+          <p>测试 DOM 元素识别和处理功能</p>
+          <button class="btn" onclick="testDOMProcessing()">扫描可点击元素</button>
+          <button class="btn secondary" onclick="testElementHighlight()">高亮元素</button>
+          <button class="btn" onclick="testHistoryTree()">生成历史树</button>
+          <div id="dom-results"></div>
+        </div>
+
+        <!-- 浏览器控制测试 -->
+        <div class="test-card">
+          <h3><span class="icon">🌐</span>浏览器控制</h3>
+          <p>测试浏览器交互和控制功能</p>
+          <div class="input-group">
+            <label>目标URL</label>
+            <input type="url" id="target-url" value="https://example.com" placeholder="输入要访问的URL">
+          </div>
+          <button class="btn" onclick="testNavigation()">导航测试</button>
+          <button class="btn secondary" onclick="testScreenshot()">截图测试</button>
+          <div id="browser-status"></div>
+        </div>
+
+        <!-- 代理功能测试 -->
+        <div class="test-card">
+          <h3><span class="icon">🧠</span>AI 代理</h3>
+          <p>测试 AI 代理的决策和执行能力</p>
+          <div class="input-group">
+            <label>任务描述</label>
+            <textarea id="task-input" rows="3" placeholder="描述你希望AI代理执行的任务..."></textarea>
+          </div>
+          <button class="btn" onclick="testAgentTask()">执行任务</button>
+          <button class="btn secondary" onclick="testAgentMemory()">测试记忆</button>
+          <div id="agent-status"></div>
+        </div>
+
+        <!-- 动作注册测试 -->
+        <div class="test-card">
+          <h3><span class="icon">⚡</span>动作系统</h3>
+          <p>测试动作注册和执行系统</p>
+          <button class="btn" onclick="listAvailableActions()">列出可用动作</button>
+          <button class="btn secondary" onclick="testCustomAction()">测试自定义动作</button>
+          <button class="btn" onclick="testActionExecution()">执行动作</button>
+          <div id="action-results"></div>
+        </div>
+
+        <!-- 性能监控 -->
+        <div class="test-card">
+          <h3><span class="icon">📊</span>性能监控</h3>
+          <p>监控系统性能和资源使用情况</p>
+          <button class="btn" onclick="startPerformanceMonitoring()">开始监控</button>
+          <button class="btn danger" onclick="stopPerformanceMonitoring()">停止监控</button>
+          <div class="performance-metrics" id="performance-metrics">
+            <div class="metric-card">
+              <div class="metric-value" id="memory-usage">--</div>
+              <div class="metric-label">内存使用 (MB)</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-value" id="dom-elements">--</div>
+              <div class="metric-label">DOM 元素数</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-value" id="response-time">--</div>
+              <div class="metric-label">响应时间 (ms)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 演示元素区域 -->
+      <div class="demo-elements">
+        <h3>🎯 测试元素区域</h3>
+        <p>这些元素用于测试 DOM 处理和交互功能</p>
+        <div class="element-grid">
+          <button class="demo-button" data-testid="demo-btn-1">点击按钮 1</button>
+          <button class="demo-button" data-testid="demo-btn-2">点击按钮 2</button>
+          <input type="text" class="demo-input" placeholder="测试输入框" data-testid="demo-input">
+          <select data-testid="demo-select">
+            <option>选项 1</option>
+            <option>选项 2</option>
+            <option>选项 3</option>
+          </select>
+          <label>
+            <input type="checkbox" class="demo-checkbox" data-testid="demo-checkbox">
+            测试复选框
+          </label>
+          <a href="#" class="demo-button" data-testid="demo-link">测试链接</a>
+        </div>
+      </div>
+
+      <!-- 日志区域 -->
+      <div class="test-card" style="margin-top: 20px;">
+        <h3><span class="icon">📝</span>系统日志</h3>
+        <button class="btn secondary" onclick="clearLogs()">清空日志</button>
+        <button class="btn" onclick="exportLogs()">导出日志</button>
+        <div class="log-area" id="log-area">
+系统启动中...
+正在加载 Browser-Use JS 模块...
+        </div>
+      </div>
+    </div>
+
     <script type="module" src="/src/main.ts"></script>
+    <script type="module" src="/src/test-ui.ts"></script>
   </body>
 </html>
