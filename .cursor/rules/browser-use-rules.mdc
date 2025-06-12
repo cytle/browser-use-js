@@ -28,6 +28,7 @@ Browser-Use JS 是 Browser-Use 的纯浏览器版本 JavaScript 复刻，让 AI 
 - **测试 UI**: @vitest/ui - 可视化测试界面
 - **覆盖率**: @vitest/coverage-v8
 - **DOM 测试**: jsdom
+- **状态管理**: zustand
 
 ### UI 组件 (测试界面)
 - **框架**: React 19
