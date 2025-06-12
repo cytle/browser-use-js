@@ -3,9 +3,9 @@
  */
 
 import { useState, useEffect } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Badge } from './ui/badge';
 import { Separator } from './ui/separator';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { SystemTest } from './SystemTest';
 import { DOMTest } from './DOMTest';
 import { AgentTest } from './AgentTest';
@@ -59,36 +59,58 @@ export function TestApp() {
           <Separator />
         </div>
 
-        {/* 主要内容区域 */}
-        <Tabs defaultValue='system' className='space-y-6'>
-          <TabsList className='grid w-full grid-cols-5'>
-            <TabsTrigger value='system'>系统测试</TabsTrigger>
-            <TabsTrigger value='dom'>DOM 处理</TabsTrigger>
-            <TabsTrigger value='agent'>AI 代理</TabsTrigger>
-            <TabsTrigger value='performance'>性能监控</TabsTrigger>
-            <TabsTrigger value='logs'>日志查看</TabsTrigger>
-          </TabsList>
+        {/* 主要内容区域 - 平铺布局 */}
+        <div className='space-y-8'>
+          {/* 系统测试 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className='text-2xl'>🔧 系统测试</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <SystemTest />
+            </CardContent>
+          </Card>
 
-          <TabsContent value='system' className='space-y-6'>
-            <SystemTest />
-          </TabsContent>
+          {/* DOM 处理 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className='text-2xl'>🌐 DOM 处理</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <DOMTest />
+            </CardContent>
+          </Card>
 
-          <TabsContent value='dom' className='space-y-6'>
-            <DOMTest />
-          </TabsContent>
+          {/* AI 代理 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className='text-2xl'>🤖 AI 代理</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <AgentTest />
+            </CardContent>
+          </Card>
 
-          <TabsContent value='agent' className='space-y-6'>
-            <AgentTest />
-          </TabsContent>
+          {/* 性能监控 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className='text-2xl'>📊 性能监控</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <PerformanceMonitor />
+            </CardContent>
+          </Card>
 
-          <TabsContent value='performance' className='space-y-6'>
-            <PerformanceMonitor />
-          </TabsContent>
-
-          <TabsContent value='logs' className='space-y-6'>
-            <LogViewer logs={logs} />
-          </TabsContent>
-        </Tabs>
+          {/* 日志查看 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className='text-2xl'>📝 日志查看</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <LogViewer logs={logs} />
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

@@ -1,8 +1,9 @@
 /**
- * @file purpose: 测试状态管理 Hook
+ * @file purpose: 测试状态管理 Store (使用 Zustand)
  */
 
-import { useState, useCallback } from 'react';
+import { create } from 'zustand';
+import { devtools } from 'zustand/middleware';
 
 export interface LogEntry {
   id: string;
@@ -17,59 +18,55 @@ export interface TestState {
   logs: LogEntry[];
 }
 
-export function useTestState() {
-  const [state, setState] = useState<TestState>({
-    isInitialized: false,
-    performanceMonitoring: false,
-    logs: [],
-  });
-
-  const addLog = useCallback(
-    (message: string, type: LogEntry['type'] = 'info') => {
-      const logEntry: LogEntry = {
-        id: Date.now().toString(),
-        timestamp: new Date().toLocaleTimeString(),
-        message,
-        type,
-      };
-
-      setState(prev => ({
-        ...prev,
-        logs: [...prev.logs, logEntry],
-      }));
-    },
-    []
-  );
-
-  const clearLogs = useCallback(() => {
-    setState(prev => ({
-      ...prev,
-      logs: [],
-    }));
-  }, []);
-
-  const setInitialized = useCallback((isInitialized: boolean) => {
-    setState(prev => ({
-      ...prev,
-      isInitialized,
-    }));
-  }, []);
-
-  const setPerformanceMonitoring = useCallback(
-    (performanceMonitoring: boolean) => {
-      setState(prev => ({
-        ...prev,
-        performanceMonitoring,
-      }));
-    },
-    []
-  );
-
-  return {
-    ...state,
-    addLog,
-    clearLogs,
-    setInitialized,
-    setPerformanceMonitoring,
-  };
+export interface TestActions {
+  addLog: (message: string, type?: LogEntry['type']) => void;
+  clearLogs: () => void;
+  setInitialized: (isInitialized: boolean) => void;
+  setPerformanceMonitoring: (performanceMonitoring: boolean) => void;
 }
+
+export type TestStore = TestState & TestActions;
+
+export const useTestState = create<TestStore>()(
+  devtools(
+    set => ({
+      // 初始状态
+      isInitialized: false,
+      performanceMonitoring: false,
+      logs: [],
+
+      // Actions
+      addLog: (message: string, type: LogEntry['type'] = 'info') => {
+        const logEntry: LogEntry = {
+          id: Date.now().toString(),
+          timestamp: new Date().toLocaleTimeString(),
+          message,
+          type,
+        };
+
+        set(
+          (state: TestState) => ({
+            logs: [...state.logs, logEntry],
+          }),
+          false,
+          'addLog'
+        );
+      },
+
+      clearLogs: () => {
+        set({ logs: [] }, false, 'clearLogs');
+      },
+
+      setInitialized: (isInitialized: boolean) => {
+        set({ isInitialized }, false, 'setInitialized');
+      },
+
+      setPerformanceMonitoring: (performanceMonitoring: boolean) => {
+        set({ performanceMonitoring }, false, 'setPerformanceMonitoring');
+      },
+    }),
+    {
+      name: 'test-state', // 用于 Redux DevTools
+    }
+  )
+);
