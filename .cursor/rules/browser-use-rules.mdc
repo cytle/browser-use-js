@@ -9,12 +9,38 @@ alwaysApply: true
 Browser-Use JS 是 Browser-Use 的纯浏览器版本 JavaScript 复刻，让 AI 代理能够直接在浏览器中控制网页交互。
 
 ## 技术栈
+
+### 核心技术
 - **语言**: TypeScript
 - **构建工具**: Vite
 - **运行环境**: 浏览器
 - **目标**: ES2020+
 - **模块系统**: ESM
 - **包管理**: pnpm
+
+### AI 集成
+- **AI SDK**: @ai-sdk/openai - Vercel AI SDK OpenAI Provider
+- **AI 核心**: ai - Vercel AI SDK 核心库
+- **支持模型**: OpenAI GPT 系列 (gpt-4o, gpt-4-turbo, gpt-3.5-turbo 等)
+
+### 测试框架
+- **测试运行器**: Vitest
+- **测试 UI**: @vitest/ui - 可视化测试界面
+- **覆盖率**: @vitest/coverage-v8
+- **DOM 测试**: jsdom
+
+### UI 组件 (测试界面)
+- **框架**: React 19
+- **样式**: Tailwind CSS 4.x
+- **组件库**: Radix UI
+- **图标**: Lucide React
+- **动画**: tw-animate-css
+
+### 开发工具
+- **代码检查**: ESLint 9.x
+- **代码格式化**: Prettier
+- **Git Hooks**: Husky
+- **预提交检查**: lint-staged
 
 ## Git Commit Message 规范
 
@@ -43,6 +69,14 @@ src/
 │   ├── index.ts
 │   ├── clickable_element_processor/
 │   └── history_tree_processor/
+├── test/                # 测试工具和辅助函数
+│   └── utils/
+├── test-ui/             # 测试界面组件
+│   ├── components/      # React 组件
+│   │   └── ui/          # UI 组件库 (基于 Radix UI)
+│   ├── lib/             # 工具函数
+│   ├── main.ts          # 测试 UI 入口
+│   └── index.css        # 样式文件 (Tailwind CSS)
 └── types/               # TypeScript 类型定义
     └── index.ts
 ```
@@ -131,10 +165,28 @@ async function searchText(query: string, page: Document): Promise<ActionResult> 
 - 避免内存泄漏
 - 合理使用缓存
 
-### LLM 集成
-- 支持多种 LLM 模型
-- 提供统一的接口
-- 处理 API 限制和错误
+### AI SDK 集成
+- 使用 Vercel AI SDK (@ai-sdk/openai) 进行 AI 模型集成
+- 提供类型安全的 AI 模型接口
+- 支持流式响应和错误处理
+- 统一的 AI 模型调用方式
+
+```typescript
+import { openai } from '@ai-sdk/openai';
+import { generateText, streamText } from 'ai';
+
+// 基础文本生成
+const { text } = await generateText({
+  model: openai('gpt-4o'),
+  prompt: '你的提示词'
+});
+
+// 流式文本生成
+const { textStream } = await streamText({
+  model: openai('gpt-4o'),
+  prompt: '你的提示词'
+});
+```
 
 ## 性能考虑
 - 避免不必要的 DOM 操作
@@ -143,9 +195,33 @@ async function searchText(query: string, page: Document): Promise<ActionResult> 
 - 优化大量数据的处理
 
 ## 测试
-- 为核心功能编写单元测试
-- 使用 Vitest 作为测试框架
+
+### 测试框架
+- 使用 Vitest 作为测试运行器
+- 使用 @vitest/ui 提供可视化测试界面
+- 使用 jsdom 进行 DOM 测试
 - 测试文件命名: `*.test.ts` 或 `*.spec.ts`
+
+### 测试 UI
+- 位于 `src/test-ui/` 目录
+- 基于 React 19 + Tailwind CSS 4.x
+- 提供可视化的测试和调试界面
+- 集成 Radix UI 组件库
+
+### 测试命令
+```bash
+# 运行测试
+pnpm test
+
+# 启动测试 UI
+pnpm test:ui
+
+# 监听模式测试
+pnpm test:watch
+
+# 生成覆盖率报告
+pnpm test:coverage
+```
 
 ## 构建和部署
 - 使用 Vite 进行构建优化
@@ -214,6 +290,113 @@ export function register[Feature]Actions(registry: ActionRegistry): void {
         includeInMemory: true
       };
     });
+}
+```
+
+### AI SDK 使用模板
+```typescript
+import { openai } from '@ai-sdk/openai';
+import { generateText, streamText } from 'ai';
+
+/**
+ * AI 代理类模板
+ */
+export class AIAgent {
+  private model = openai('gpt-4o');
+
+  /**
+   * 生成文本响应
+   */
+  async generateResponse(prompt: string): Promise<string> {
+    try {
+      const { text } = await generateText({
+        model: this.model,
+        prompt,
+        temperature: 0.7,
+        maxTokens: 1000
+      });
+      return text;
+    } catch (error) {
+      console.error('AI 生成失败:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * 流式生成文本
+   */
+  async *streamResponse(prompt: string): AsyncGenerator<string> {
+    try {
+      const { textStream } = await streamText({
+        model: this.model,
+        prompt,
+        temperature: 0.7
+      });
+
+      for await (const delta of textStream) {
+        yield delta;
+      }
+    } catch (error) {
+      console.error('AI 流式生成失败:', error);
+      throw error;
+    }
+  }
+}
+```
+
+### 测试 UI 组件模板
+```typescript
+import React from 'react';
+import { Button } from './ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+
+interface TestComponentProps {
+  title: string;
+  onTest: () => Promise<void>;
+}
+
+/**
+ * 测试组件模板
+ */
+export function TestComponent({ title, onTest }: TestComponentProps) {
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [result, setResult] = React.useState<string | null>(null);
+
+  const handleTest = async () => {
+    setIsLoading(true);
+    try {
+      await onTest();
+      setResult('测试成功');
+    } catch (error) {
+      setResult(`测试失败: ${error.message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <Card className="w-full max-w-md">
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <Button
+          onClick={handleTest}
+          disabled={isLoading}
+          className="w-full"
+        >
+          {isLoading ? '测试中...' : '开始测试'}
+        </Button>
+        {result && (
+          <div className={`p-2 rounded ${
+            result.includes('成功') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+          }`}>
+            {result}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
 }
 ```
 

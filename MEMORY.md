@@ -119,3 +119,152 @@
 - MutationObserver 监听变化
 - TreeWalker 高效遍历
 - 性能模式跳过昂贵检查
+
+## 项目概述
+
+Browser-Use
+JS 是 Browser-Use 的纯浏览器版本 JavaScript 复刻，让 AI 代理能够直接在浏览器中控制网页交互。
+
+## 技术栈更新记录
+
+### 2024-12 AI Provider 技术栈更新
+
+- **更新前**: 直接使用字符串模型名称 (如 "gpt-4o")
+- **更新后**: 使用 Vercel AI SDK (@ai-sdk/openai)
+- **原因**:
+  - 提供更好的类型安全
+  - 统一的 AI 模型接口
+  - 更好的错误处理和流式响应支持
+  - 与现代 AI 开发最佳实践保持一致
+
+### AI 集成技术栈
+
+- **AI SDK**: @ai-sdk/openai - Vercel AI SDK OpenAI Provider
+- **AI 核心**: ai - Vercel AI SDK 核心库
+- **支持模型**: OpenAI GPT 系列 (gpt-4o, gpt-4-turbo, gpt-3.5-turbo 等)
+
+## 目录结构更新
+
+### test-ui 目录 (新增)
+
+```
+src/test-ui/
+├── components/      # React 组件
+│   └── ui/          # UI 组件库 (基于 Radix UI)
+├── lib/             # 工具函数
+├── main.ts          # 测试 UI 入口
+└── index.css        # 样式文件 (Tailwind CSS)
+```
+
+**用途**:
+
+- 提供可视化的测试界面
+- 方便开发者调试和测试 AI 代理功能
+- 展示项目功能和使用示例
+
+**技术栈**:
+
+- React 19
+- Tailwind CSS 4.x
+- Radix UI 组件库
+- Lucide React 图标
+- tw-animate-css 动画
+
+## 核心架构
+
+### 模块组织
+
+```
+src/
+├── main.ts              # 主入口文件
+├── agent/               # AI 代理核心逻辑
+│   ├── index.ts
+│   ├── memory/          # 记忆管理
+│   └── message_manager/ # 消息管理
+├── browser/             # 浏览器交互模块
+│   ├── index.ts
+│   └── controller.ts
+├── controller/          # 控制器和动作注册
+│   ├── index.ts
+│   └── registry/        # 动作注册系统
+├── dom/                 # DOM 处理和元素识别
+│   ├── index.ts
+│   ├── clickable_element_processor/
+│   └── history_tree_processor/
+├── test/                # 测试工具和辅助函数
+│   └── utils/
+├── test-ui/             # 测试界面组件
+└── types/               # TypeScript 类型定义
+```
+
+## 开发工具链
+
+### 包管理
+
+- **工具**: pnpm
+- **原因**: 更快的安装速度，更好的磁盘空间利用率
+
+### 测试框架
+
+- **测试运行器**: Vitest
+- **测试 UI**: @vitest/ui - 可视化测试界面
+- **覆盖率**: @vitest/coverage-v8
+- **DOM 测试**: jsdom
+
+### 代码质量
+
+- **代码检查**: ESLint 9.x
+- **代码格式化**: Prettier
+- **Git Hooks**: Husky
+- **预提交检查**: lint-staged
+
+## 使用示例更新
+
+### 新的 AI 模型使用方式
+
+```typescript
+import { openai } from '@ai-sdk/openai';
+import { Agent } from './src/agent';
+
+// 创建 AI 代理
+const agent = new Agent({
+  task: '执行网页任务',
+  model: openai('gpt-4o'), // 使用 Vercel AI SDK
+  controller: new BrowserController(),
+});
+
+const result = await agent.run();
+```
+
+## 重要决策记录
+
+1. **AI SDK 选择**: 选择 Vercel AI SDK 而非直接调用 OpenAI API
+
+   - 更好的 TypeScript 支持
+   - 统一的流式响应处理
+   - 更好的错误处理机制
+
+2. **测试 UI 技术栈**: 选择 React + Tailwind CSS
+
+   - 快速开发现代化界面
+   - 与主项目技术栈保持一致
+   - 丰富的组件生态系统
+
+3. **包管理器**: 选择 pnpm
+   - 更快的安装速度
+   - 更好的依赖管理
+   - 节省磁盘空间
+
+## 待解决问题
+
+- [ ] AI SDK 的流式响应集成
+- [ ] 测试 UI 的完整功能实现
+- [ ] 性能优化和内存管理
+- [ ] 错误处理机制完善
+
+## 参考资源
+
+- [Vercel AI SDK 文档](https://sdk.vercel.ai/)
+- [OpenAI Provider 文档](https://sdk.vercel.ai/providers/ai-sdk-providers/openai)
+- [Vitest 文档](https://vitest.dev/)
+- [Tailwind CSS 4.x 文档](https://tailwindcss.com/)
