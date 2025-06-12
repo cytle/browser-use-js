@@ -5,7 +5,20 @@
  * 它提供了一个抽象层，让 AI 代理能够以编程方式控制浏览器行为。
  */
 
-// 临时导出，确保模块结构正确
+// 导出浏览器控制器
+export {
+  BrowserController,
+  browserController,
+  PageLoadState,
+  type NavigationOptions,
+  type WindowInfo,
+  type BrowserEventData,
+} from './controller';
+
+// 导出配置类型
+export type { BrowserState } from '../types';
+
+// 模块版本
 export const BROWSER_MODULE_VERSION = '0.1.0';
 
 /**

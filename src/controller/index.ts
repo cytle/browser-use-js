@@ -5,19 +5,26 @@
  * 它是 AI 代理和具体浏览器操作之间的桥梁。
  */
 
-// 临时导出，确保模块结构正确
-export const CONTROLLER_MODULE_VERSION = '0.1.0';
+// 导出动作注册系统
+export {
+  ActionRegistry,
+  actionRegistry,
+  action,
+  controller,
+  registerActions,
+  createValidator,
+  type ActionMetadata,
+  type ActionStats,
+  type ActionDecoratorOptions,
+} from './registry';
 
-/**
- * 动作执行结果接口
- */
-export interface ActionResult {
-  /** 执行是否成功 */
-  success: boolean;
-  /** 提取的内容 */
-  extractedContent?: string;
-  /** 是否包含在记忆中 */
-  includeInMemory?: boolean;
-  /** 错误信息 */
-  error?: string;
-}
+// 导出类型
+export type {
+  ActionParams,
+  ActionResult,
+  ActionHandler,
+  IActionRegistry,
+} from '../types';
+
+// 模块版本
+export const CONTROLLER_MODULE_VERSION = '0.1.0';

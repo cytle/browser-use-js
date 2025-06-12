@@ -2,9 +2,8 @@
  * @file purpose: 历史树处理器测试
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { HistoryTreeProcessor } from './index';
-import { DOMChangeType } from '../../types';
 import { createMockElement, cleanupDOM } from '../../test/utils/dom-helpers';
 
 describe('HistoryTreeProcessor', () => {
@@ -90,13 +89,13 @@ describe('HistoryTreeProcessor', () => {
 
       // 手动触发一些变更记录来测试记录功能
       // 这里我们直接测试变更记录的存储而不是 MutationObserver
-      const mockChange = {
-        id: 'test-change-1',
-        type: DOMChangeType.NODE_ADDED,
-        targetSelector: '#test-element',
-        timestamp: Date.now(),
-        description: 'Test change',
-      };
+      // const mockChange = {
+      //   id: 'test-change-1',
+      //   type: DOMChangeType.NODE_ADDED,
+      //   targetSelector: '#test-element',
+      //   timestamp: Date.now(),
+      //   description: 'Test change',
+      // };
 
       // 通过私有方法测试（这里我们简化测试）
       // 实际项目中，MutationObserver 在真实浏览器环境中会正常工作
