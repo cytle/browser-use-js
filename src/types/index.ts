@@ -597,7 +597,7 @@ export interface ControllerConfig extends BaseConfig {
 /**
  * 浏览器配置
  */
-export interface BrowserConfig {
+export interface BrowserConfig extends BaseConfig {
   /** 视口大小 */
   viewport?: {
     width: number;

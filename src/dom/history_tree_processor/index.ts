@@ -8,17 +8,17 @@
  * - 内存优化的历史存储
  */
 
-import {
+import type {
   IHistoryTreeProcessor,
   HistoryTreeConfig,
   DOMSnapshot,
   HistoryTreeNode,
   DOMChangeRecord,
-  DOMChangeType,
   HistoryTreeStats,
   RollbackOptions,
   RollbackResult,
 } from '../../types';
+import { DOMChangeType } from '../../types';
 
 /**
  * 历史树处理器实现

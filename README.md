@@ -14,6 +14,7 @@ Browser-Use JS 是原 Python 版本 Browser-Use 的 JavaScript 实现，专为�
 - 🧠 **智能决策** - 基于页面内容做出下一步行动决策
 - 🎯 **任务导向** - 接受自然语言任务描述并自动完成
 - 🌐 **纯浏览器运行** - 无需服务器，直接在浏览器中运行
+- 🖼️ **Iframe 沙盒控制** - 通过 Iframe 安全地操控目标网页，支持跨域访问
 
 ## 🚀 快速开始
 
@@ -23,38 +24,130 @@ Browser-Use JS 是原 Python 版本 Browser-Use 的 JavaScript 实现，专为�
 pnpm install
 ```
 
-### 开发模式
+### 启动演示
 
 ```bash
 pnpm dev
 ```
 
-### 构建项目
+访问 `http://localhost:3000` 查看演示界面。
 
-```bash
-pnpm build
+## 🎯 演示界面
+
+演示界面提供了完整的 Browser-Use JS 功能展示：
+
+### 📋 主要功能模块
+
+1. **🎯 综合演示** - 完整的 AI 代理工作流程演示
+
+   - 智能网页搜索
+   - 表单自动填写
+   - 自定义任务执行
+   - 实时测试页面
+
+2. **🔧 系统测试** - 系统初始化和配置
+
+   - 调试模式配置
+   - 超时时间设置
+   - 系统状态监控
+
+3. **🌐 DOM 处理** - 页面元素识别和交互
+
+   - DOM 结构扫描
+   - 元素高亮演示
+   - 交互性测试
+
+4. **🤖 AI 代理** - AI 任务理解和执行
+
+   - 自然语言任务输入
+   - 代理记忆管理
+   - 可用动作列表
+
+5. **📊 性能监控** - 系统性能和资源监控
+
+   - CPU 和内存使用率
+   - 操作执行时间
+   - 错误率统计
+
+6. **📝 日志查看** - 系统运行日志和调试信息
+   - 实时日志流
+   - 多级别日志分类
+   - 错误追踪
+
+### 🎮 使用流程
+
+1. **初始化系统**
+
+   ```
+   系统测试 → 配置参数 → 开始初始化
+   ```
+
+2. **测试功能**
+
+   ```
+   DOM 处理 → 扫描元素 → 高亮测试
+   AI 代理 → 输入任务 → 执行验证
+   ```
+
+3. **综合演示**
+   ```
+   综合演示 → 选择场景 → 配置参数 → 开始演示
+   ```
+
+## 🔧 技术架构
+
+### 🖼️ Iframe 沙盒架构
+
+Browser-Use JS 采用 Iframe 沙盒技术来安全地操控目标网页：
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    主应用 (Host Application)                    │
+├─────────────────────────────────────────────────────────────┤
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
+│  │ AI Agent    │  │ Controller  │  │ Iframe Manager      │  │
+│  │ 智能决策    │  │ 动作协调    │  │ 沙盒管理            │  │
+│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
+├─────────────────────────────────────────────────────────────┤
+│  ┌─────────────────────────────────────────────────────────┐  │
+│  │              消息桥接系统 (Message Bridge)               │  │
+│  │          postMessage API + 安全验证 + 协议转换          │  │
+│  └─────────────────────────────────────────────────────────┘  │
+├─────────────────────────────────────────────────────────────┤
+│  ┌─────────────────────────────────────────────────────────┐  │
+│  │                Iframe 沙盒环境                          │  │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────┐  │  │
+│  │  │ 目标网页    │  │ DOM 操作    │  │ 事件监听        │  │  │
+│  │  │ Target Page │  │ Adapter     │  │ Event Handler   │  │  │
+│  │  └─────────────┘  └─────────────┘  └─────────────────┘  │  │
+│  │                                                         │  │
+│  │  安全策略: sandbox="allow-scripts allow-same-origin"    │  │
+│  └─────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-### 预览构建结果
+**核心优势**:
 
-```bash
-pnpm preview
-```
+- 🔒 **安全隔离**: Iframe 沙盒提供天然的安全边界
+- 🌐 **跨域支持**: 通过代理机制支持跨域页面操作
+- 🛡️ **权限控制**: 细粒度的沙盒权限配置
+- 🔄 **消息通信**: 基于 postMessage 的安全通信机制
+- 📊 **状态同步**: 实时同步 Iframe 内页面状态
 
-### 测试
+### 核心技术栈
 
-```bash
-# 运行测试
-pnpm test
+- **语言**: TypeScript
+- **构建工具**: Vite
+- **前端框架**: React 19
+- **样式框架**: Tailwind CSS 4.x
+- **组件库**: Radix UI + Shadcn UI
+- **AI 集成**: Vercel AI SDK (@ai-sdk/openai)
+- **状态管理**: Zustand
+- **测试框架**: Vitest
+- **沙盒技术**: Iframe + postMessage API
+- **跨域处理**: CORS 代理 + 消息通信
 
-# 运行测试 UI
-pnpm test:ui
-
-# 监听模式测试
-pnpm test:watch
-```
-
-## 🏗️ 项目结构
+### 模块结构
 
 ```
 browser-use-js/
@@ -74,6 +167,11 @@ browser-use-js/
 │   │   ├── index.ts
 │   │   ├── clickable_element_processor/
 │   │   └── history_tree_processor/
+│   ├── iframe/              # Iframe 沙盒控制模块
+│   │   ├── index.ts
+│   │   ├── manager/         # Iframe 管理器
+│   │   ├── bridge/          # 消息桥接
+│   │   └── proxy/           # 跨域代理
 │   ├── test/                # 测试工具和辅助函数
 │   │   └── utils/
 │   ├── test-ui/             # 测试界面组件
@@ -90,138 +188,116 @@ browser-use-js/
 └── tsconfig.json            # TypeScript 配置
 ```
 
-## 🔧 核心功能
+## 📚 开发指南
 
-### AI 代理 (Agent)
+### 添加新功能
 
-- 任务解析和执行
-- 智能决策引擎
-- 记忆管理
+1. **新增 AI 动作**
 
-### 浏览器控制 (Browser)
+   ```typescript
+   @controller.registry.action("动作描述")
+   async function newAction(params: ActionParams): Promise<ActionResult> {
+     // 实现动作逻辑
+     return { success: true, data: result };
+   }
+   ```
 
-- 页面导航
-- 元素交互
-- 事件处理
+2. **扩展 DOM 处理**
 
-### DOM 处理 (DOM)
+   ```typescript
+   export class CustomProcessor extends DOMCoreProcessor {
+     async processElements(elements: HTMLElement[]): Promise<ProcessResult> {
+       // 自定义处理逻辑
+     }
+   }
+   ```
 
-- 可点击元素识别
-- 页面结构分析
-- 内容提取
+3. **添加测试组件**
+   ```typescript
+   export function NewTestComponent() {
+     // 新的测试界面组件
+   }
+   ```
 
-### 控制器 (Controller)
-
-- 动作注册系统
-- 自定义功能扩展
-- 结果处理
-
-## 📝 使用示例
+### 配置 AI 模型
 
 ```typescript
-import { Agent } from './src/agent';
-import { BrowserController } from './src/browser';
 import { openai } from '@ai-sdk/openai';
+import { generateText } from 'ai';
 
-// 创建 AI 代理
-const agent = new Agent({
-  task: '在购物网站上搜索笔记本电脑并比较价格',
-  model: openai('gpt-4o'), // 使用 Vercel AI SDK
-  controller: new BrowserController(),
+const { text } = await generateText({
+  model: openai('gpt-4o'),
+  prompt: '你的提示词',
 });
-
-// 运行任务
-const result = await agent.run();
-console.log('任务完成:', result);
 ```
 
-## 🎨 自定义动作
-
-您可以轻松添加自定义动作：
+### Iframe 沙盒操作
 
 ```typescript
-import { ActionRegistry } from './src/controller/registry';
+import { IframeManager } from '@/iframe';
 
-const registry = new ActionRegistry();
+// 创建 Iframe 沙盒
+const iframeManager = new IframeManager({
+  sandbox: ['allow-scripts', 'allow-same-origin'],
+  security: {
+    allowedOrigins: ['https://example.com'],
+    maxExecutionTime: 30000,
+  },
+});
 
-// 注册自定义动作
-registry.registerAction('搜索产品', async (query: string) => {
-  // 实现搜索逻辑
-  return {
-    success: true,
-    data: '搜索结果',
-  };
+// 加载目标页面
+await iframeManager.loadPage('https://example.com');
+
+// 在 Iframe 中执行操作
+await iframeManager.executeAction('click', {
+  selector: '#submit-button',
 });
 ```
 
-## 🛠️ 技术栈
+## 🧪 测试
 
-### 核心技术
+### 运行测试
 
-- **语言**: TypeScript
-- **构建工具**: Vite
-- **包管理**: pnpm
-- **运行环境**: 浏览器
-- **目标**: ES2020+
-- **模块系统**: ESM
+```bash
+# 运行所有测试
+pnpm test
 
-### AI 集成
+# 启动测试 UI
+pnpm test:ui
 
-- **AI SDK**: [@ai-sdk/openai](https://sdk.vercel.ai/providers/ai-sdk-providers/openai) - Vercel AI
-  SDK OpenAI Provider
-- **AI 核心**: [ai](https://sdk.vercel.ai/) - Vercel AI SDK 核心库
-- **支持模型**: OpenAI GPT 系列 (gpt-4o, gpt-4-turbo, gpt-3.5-turbo 等)
+# 生成覆盖率报告
+pnpm test:coverage
+```
 
-### 测试框架
+### 测试页面元素
 
-- **测试运行器**: Vitest
-- **测试 UI**: @vitest/ui - 可视化测试界面
-- **覆盖率**: @vitest/coverage-v8
-- **DOM 测试**: jsdom
+演示界面包含丰富的测试元素，所有元素都带有 `data-testid` 属性：
 
-### UI 组件 (测试界面)
+- 搜索框: `search-input`
+- 表单字段: `name-input`, `email-input`, `phone-input`
+- 按钮: `primary-button`, `secondary-button`
+- 链接: `home-link`, `about-link`
+- 数据列表: `user-item-{id}`
 
-- **框架**: React 19
-- **样式**: Tailwind CSS 4.x
-- **组件库**: Radix UI
-- **图标**: Lucide React
-- **动画**: tw-animate-css
+## 📖 详细文档
 
-### 开发工具
-
-- **代码检查**: ESLint 9.x
-- **代码格式化**: Prettier
-- **Git Hooks**: Husky
-- **预提交检查**: lint-staged
-
-## 🌟 特性
-
-- ✅ **TypeScript 支持** - 完整的类型安全
-- ✅ **模块化设计** - 易于扩展和维护
-- ✅ **现代化构建** - 基于 Vite 的快速开发体验
-- ✅ **浏览器原生** - 无需额外运行时环境
-- ✅ **AI 模型集成** - 基于 Vercel AI SDK 的 OpenAI 集成
-- ✅ **实时交互** - 即时的页面反馈和控制
-- ✅ **可视化测试** - 内置测试 UI 界面
-- ✅ **现代化 UI** - React + Tailwind CSS 测试界面
-
-## 🔗 与原项目的关系
-
-本项目是 [Browser-Use](https://github.com/browser-use/browser-use)
-的 JavaScript 移植版本，保持了核心功能的一致性：
-
-- **相同的设计理念** - AI 代理自主控制浏览器
-- **相似的 API 设计** - 熟悉的开发体验
-- **兼容的任务格式** - 可以运行相同类型的任务
-- **浏览器优化** - 专为浏览器环境优化
+- [演示指南](./DEMO_GUIDE.md) - 详细的演示界面使用说明
+- [开发规范](./MEMORY.md) - 项目开发规范和最佳实践
+- [任务管理](./TASK.md) - 项目任务和进度管理
 
 ## 🤝 贡献
 
-欢迎贡献代码！请查看 [贡献指南](../CONTRIBUTING.md) 了解详情。
+欢迎贡献代码！请遵循以下步骤：
+
+1. Fork 项目
+2. 创建功能分支 (`git checkout -b feature/amazing-feature`)
+3. 提交更改 (`git commit -m 'Add amazing feature'`)
+4. 推送到分支 (`git push origin feature/amazing-feature`)
+5. 创建 Pull Request
 
 ## 📄 许可证
 
-本项目采用与原 Browser-Use 项目相同的许可证。
+MIT License - 详见 [LICENSE](LICENSE) 文件
 
 ## 🔗 相关链接
 
