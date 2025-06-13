@@ -1028,6 +1028,637 @@ export type InteractionCapability =
   | 'drag'
   | 'context-menu';
 
+// ============================================================================
+// Iframe 沙盒系统类型
+// ============================================================================
+
+/**
+ * Iframe 沙盒权限枚举
+ */
+export enum IframeSandboxPermission {
+  /** 允许表单提交 */
+  ALLOW_FORMS = 'allow-forms',
+  /** 允许模态窗口 */
+  ALLOW_MODALS = 'allow-modals',
+  /** 允许方向锁定 */
+  ALLOW_ORIENTATION_LOCK = 'allow-orientation-lock',
+  /** 允许指针锁定 */
+  ALLOW_POINTER_LOCK = 'allow-pointer-lock',
+  /** 允许弹窗 */
+  ALLOW_POPUPS = 'allow-popups',
+  /** 允许弹窗逃逸沙盒 */
+  ALLOW_POPUPS_TO_ESCAPE_SANDBOX = 'allow-popups-to-escape-sandbox',
+  /** 允许展示 */
+  ALLOW_PRESENTATION = 'allow-presentation',
+  /** 允许同源 */
+  ALLOW_SAME_ORIGIN = 'allow-same-origin',
+  /** 允许脚本 */
+  ALLOW_SCRIPTS = 'allow-scripts',
+  /** 允许存储访问 */
+  ALLOW_STORAGE_ACCESS_BY_USER_ACTIVATION = 'allow-storage-access-by-user-activation',
+  /** 允许顶级导航 */
+  ALLOW_TOP_NAVIGATION = 'allow-top-navigation',
+  /** 允许顶级导航（用户激活） */
+  ALLOW_TOP_NAVIGATION_BY_USER_ACTIVATION = 'allow-top-navigation-by-user-activation',
+}
+
+/**
+ * Iframe 状态枚举
+ */
+export enum IframeStatus {
+  /** 初始化中 */
+  INITIALIZING = 'initializing',
+  /** 加载中 */
+  LOADING = 'loading',
+  /** 已就绪 */
+  READY = 'ready',
+  /** 错误状态 */
+  ERROR = 'error',
+  /** 已销毁 */
+  DESTROYED = 'destroyed',
+}
+
+/**
+ * Iframe 配置接口
+ */
+export interface IframeConfig extends BaseConfig {
+  /** Iframe ID */
+  id?: string;
+  /** 目标 URL */
+  url: string;
+  /** 沙盒权限 */
+  sandbox?: IframeSandboxPermission[];
+  /** 宽度 */
+  width?: number | string;
+  /** 高度 */
+  height?: number | string;
+  /** 是否允许全屏 */
+  allowFullscreen?: boolean;
+  /** 加载超时时间（毫秒） */
+  loadTimeout?: number;
+  /** 自定义样式 */
+  style?: Partial<CSSStyleDeclaration>;
+  /** 自定义属性 */
+  attributes?: Record<string, string>;
+  /** 是否隐藏 */
+  hidden?: boolean;
+}
+
+/**
+ * Iframe 实例信息
+ */
+export interface IframeInstance {
+  /** 实例 ID */
+  id: string;
+  /** Iframe 元素 */
+  element: HTMLIFrameElement;
+  /** 配置信息 */
+  config: IframeConfig;
+  /** 当前状态 */
+  status: IframeStatus;
+  /** 创建时间 */
+  createdAt: number;
+  /** 最后活动时间 */
+  lastActivity: number;
+  /** 错误信息 */
+  error?: string;
+  /** 是否已建立通信 */
+  communicationEstablished: boolean;
+}
+
+/**
+ * 消息类型枚举
+ */
+export enum MessageType {
+  /** 握手消息 */
+  HANDSHAKE = 'handshake',
+  /** 握手响应 */
+  HANDSHAKE_RESPONSE = 'handshake_response',
+  /** DOM 操作 */
+  DOM_OPERATION = 'dom_operation',
+  /** DOM 操作响应 */
+  DOM_OPERATION_RESPONSE = 'dom_operation_response',
+  /** 事件通知 */
+  EVENT_NOTIFICATION = 'event_notification',
+  /** 错误报告 */
+  ERROR_REPORT = 'error_report',
+  /** 心跳检测 */
+  HEARTBEAT = 'heartbeat',
+  /** 心跳响应 */
+  HEARTBEAT_RESPONSE = 'heartbeat_response',
+  /** 自定义消息 */
+  CUSTOM = 'custom',
+}
+
+/**
+ * 消息基础接口
+ */
+export interface BaseMessage {
+  /** 消息 ID */
+  id: string;
+  /** 消息类型 */
+  type: MessageType;
+  /** 时间戳 */
+  timestamp: number;
+  /** 源 Iframe ID */
+  sourceId?: string;
+  /** 目标 Iframe ID */
+  targetId?: string;
+}
+
+/**
+ * DOM 操作类型枚举
+ */
+export enum DOMOperationType {
+  /** 查询元素 */
+  QUERY_ELEMENT = 'query_element',
+  /** 点击元素 */
+  CLICK_ELEMENT = 'click_element',
+  /** 输入文本 */
+  TYPE_TEXT = 'type_text',
+  /** 获取元素信息 */
+  GET_ELEMENT_INFO = 'get_element_info',
+  /** 滚动页面 */
+  SCROLL_PAGE = 'scroll_page',
+  /** 获取页面信息 */
+  GET_PAGE_INFO = 'get_page_info',
+  /** 执行脚本 */
+  EXECUTE_SCRIPT = 'execute_script',
+  /** 截图 */
+  TAKE_SCREENSHOT = 'take_screenshot',
+}
+
+/**
+ * DOM 操作消息
+ */
+export interface DOMOperationMessage extends BaseMessage {
+  type: MessageType.DOM_OPERATION;
+  /** 操作类型 */
+  operation: DOMOperationType;
+  /** 操作参数 */
+  params: Record<string, unknown>;
+  /** 是否需要响应 */
+  expectResponse?: boolean;
+}
+
+/**
+ * DOM 操作响应消息
+ */
+export interface DOMOperationResponseMessage extends BaseMessage {
+  type: MessageType.DOM_OPERATION_RESPONSE;
+  /** 原始消息 ID */
+  originalMessageId: string;
+  /** 操作是否成功 */
+  success: boolean;
+  /** 响应数据 */
+  data?: unknown;
+  /** 错误信息 */
+  error?: string;
+}
+
+/**
+ * 事件通知消息
+ */
+export interface EventNotificationMessage extends BaseMessage {
+  type: MessageType.EVENT_NOTIFICATION;
+  /** 事件类型 */
+  eventType: string;
+  /** 事件数据 */
+  eventData: Record<string, unknown>;
+}
+
+/**
+ * 错误报告消息
+ */
+export interface ErrorReportMessage extends BaseMessage {
+  type: MessageType.ERROR_REPORT;
+  /** 错误消息 */
+  message: string;
+  /** 错误堆栈 */
+  stack?: string;
+  /** 错误上下文 */
+  context?: Record<string, unknown>;
+}
+
+/**
+ * 心跳消息
+ */
+export interface HeartbeatMessage extends BaseMessage {
+  type: MessageType.HEARTBEAT | MessageType.HEARTBEAT_RESPONSE;
+  /** 负载数据 */
+  payload?: Record<string, unknown>;
+}
+
+/**
+ * 握手消息
+ */
+export interface HandshakeMessage extends BaseMessage {
+  type: MessageType.HANDSHAKE | MessageType.HANDSHAKE_RESPONSE;
+  /** 协议版本 */
+  protocolVersion: string;
+  /** 能力列表 */
+  capabilities: string[];
+  /** 配置信息 */
+  config?: Record<string, unknown>;
+}
+
+/**
+ * 自定义消息
+ */
+export interface CustomMessage extends BaseMessage {
+  type: MessageType.CUSTOM;
+  /** 自定义类型 */
+  customType: string;
+  /** 消息数据 */
+  data: unknown;
+}
+
+/**
+ * 消息联合类型
+ */
+export type IframeMessage =
+  | DOMOperationMessage
+  | DOMOperationResponseMessage
+  | EventNotificationMessage
+  | ErrorReportMessage
+  | HeartbeatMessage
+  | HandshakeMessage
+  | CustomMessage;
+
+/**
+ * 消息处理器类型
+ */
+export type MessageHandler<T extends IframeMessage = IframeMessage> = (
+  message: T,
+  source: IframeInstance
+) => Promise<void> | void;
+
+/**
+ * 消息桥接配置
+ */
+export interface MessageBridgeConfig extends BaseConfig {
+  /** 心跳间隔（毫秒） */
+  heartbeatInterval?: number;
+  /** 消息超时时间（毫秒） */
+  messageTimeout?: number;
+  /** 最大重试次数 */
+  maxRetries?: number;
+  /** 是否启用消息队列 */
+  enableQueue?: boolean;
+  /** 队列最大长度 */
+  maxQueueSize?: number;
+  /** 是否启用消息压缩 */
+  enableCompression?: boolean;
+}
+
+/**
+ * 跨域代理配置
+ */
+export interface ProxyConfig extends BaseConfig {
+  /** 代理服务器 URL */
+  proxyUrl?: string;
+  /** 允许的域名列表 */
+  allowedDomains?: string[];
+  /** 禁止的域名列表 */
+  blockedDomains?: string[];
+  /** 请求头白名单 */
+  allowedHeaders?: string[];
+  /** 缓存配置 */
+  cache?: {
+    enabled: boolean;
+    maxAge: number;
+    maxSize: number;
+  };
+  /** 重试配置 */
+  retry?: {
+    maxAttempts: number;
+    delay: number;
+    backoff: number;
+  };
+}
+
+/**
+ * 安全策略配置
+ */
+export interface SecurityConfig extends BaseConfig {
+  /** CSP 策略 */
+  contentSecurityPolicy?: string;
+  /** 允许的脚本源 */
+  allowedScriptSources?: string[];
+  /** 允许的样式源 */
+  allowedStyleSources?: string[];
+  /** 允许的图片源 */
+  allowedImageSources?: string[];
+  /** 是否启用脚本检测 */
+  enableScriptDetection?: boolean;
+  /** 恶意代码检测规则 */
+  malwareDetectionRules?: string[];
+  /** 最大执行时间（毫秒） */
+  maxExecutionTime?: number;
+  /** 最大内存使用（字节） */
+  maxMemoryUsage?: number;
+}
+
+/**
+ * Iframe 管理器接口
+ */
+export interface IIframeManager {
+  /**
+   * 创建 Iframe 实例
+   * @param config Iframe 配置
+   */
+  createIframe(config: IframeConfig): Promise<IframeInstance>;
+
+  /**
+   * 销毁 Iframe 实例
+   * @param id Iframe ID
+   */
+  destroyIframe(id: string): Promise<void>;
+
+  /**
+   * 获取 Iframe 实例
+   * @param id Iframe ID
+   */
+  getIframe(id: string): IframeInstance | undefined;
+
+  /**
+   * 获取所有 Iframe 实例
+   */
+  getAllIframes(): IframeInstance[];
+
+  /**
+   * 检查 Iframe 健康状态
+   * @param id Iframe ID
+   */
+  checkHealth(id: string): Promise<boolean>;
+
+  /**
+   * 清理无效的 Iframe
+   */
+  cleanup(): Promise<void>;
+}
+
+/**
+ * 消息桥接接口
+ */
+export interface IMessageBridge {
+  /**
+   * 发送消息
+   * @param targetId 目标 Iframe ID
+   * @param message 消息内容
+   */
+  sendMessage(targetId: string, message: IframeMessage): Promise<void>;
+
+  /**
+   * 广播消息
+   * @param message 消息内容
+   * @param excludeIds 排除的 Iframe ID 列表
+   */
+  broadcastMessage(
+    message: IframeMessage,
+    excludeIds?: string[]
+  ): Promise<void>;
+
+  /**
+   * 注册消息处理器
+   * @param type 消息类型
+   * @param handler 处理器函数
+   */
+  registerHandler<T extends IframeMessage>(
+    type: MessageType,
+    handler: MessageHandler<T>
+  ): void;
+
+  /**
+   * 移除消息处理器
+   * @param type 消息类型
+   * @param handler 处理器函数
+   */
+  removeHandler<T extends IframeMessage>(
+    type: MessageType,
+    handler: MessageHandler<T>
+  ): void;
+
+  /**
+   * 启动心跳检测
+   */
+  startHeartbeat(): void;
+
+  /**
+   * 停止心跳检测
+   */
+  stopHeartbeat(): void;
+}
+
+/**
+ * 跨域代理接口
+ */
+export interface ICrossOriginProxy {
+  /**
+   * 代理请求
+   * @param url 目标 URL
+   * @param options 请求选项
+   */
+  proxyRequest(url: string, options?: RequestInit): Promise<Response>;
+
+  /**
+   * 检查域名是否被允许
+   * @param domain 域名
+   */
+  isDomainAllowed(domain: string): boolean;
+
+  /**
+   * 添加允许的域名
+   * @param domain 域名
+   */
+  addAllowedDomain(domain: string): void;
+
+  /**
+   * 移除允许的域名
+   * @param domain 域名
+   */
+  removeAllowedDomain(domain: string): void;
+
+  /**
+   * 清理缓存
+   */
+  clearCache(): void;
+}
+
+/**
+ * 安全管理器接口
+ */
+export interface ISecurityManager {
+  /**
+   * 验证脚本安全性
+   * @param script 脚本内容
+   */
+  validateScript(script: string): Promise<boolean>;
+
+  /**
+   * 检测恶意代码
+   * @param content 内容
+   */
+  detectMalware(content: string): Promise<boolean>;
+
+  /**
+   * 应用安全策略
+   * @param iframe Iframe 实例
+   */
+  applySecurityPolicy(iframe: IframeInstance): Promise<void>;
+
+  /**
+   * 监控资源使用
+   * @param iframe Iframe 实例
+   */
+  monitorResourceUsage(iframe: IframeInstance): Promise<void>;
+
+  /**
+   * 生成安全报告
+   * @param iframe Iframe 实例
+   */
+  generateSecurityReport(iframe: IframeInstance): Promise<SecurityReport>;
+}
+
+/**
+ * DOM 操作适配器接口
+ */
+export interface IDOMAdapter {
+  /**
+   * 在 Iframe 中查询元素
+   * @param iframeId Iframe ID
+   * @param selector 选择器
+   */
+  queryElement(iframeId: string, selector: string): Promise<ElementInfo | null>;
+
+  /**
+   * 在 Iframe 中点击元素
+   * @param iframeId Iframe ID
+   * @param selector 选择器
+   * @param options 点击选项
+   */
+  clickElement(
+    iframeId: string,
+    selector: string,
+    options?: ClickOptions
+  ): Promise<ActionResult>;
+
+  /**
+   * 在 Iframe 中输入文本
+   * @param iframeId Iframe ID
+   * @param selector 选择器
+   * @param text 文本内容
+   * @param options 输入选项
+   */
+  typeText(
+    iframeId: string,
+    selector: string,
+    text: string,
+    options?: TypeOptions
+  ): Promise<ActionResult>;
+
+  /**
+   * 获取 Iframe 页面信息
+   * @param iframeId Iframe ID
+   */
+  getPageInfo(iframeId: string): Promise<PageInfo>;
+
+  /**
+   * 在 Iframe 中执行脚本
+   * @param iframeId Iframe ID
+   * @param script 脚本内容
+   */
+  executeScript(iframeId: string, script: string): Promise<unknown>;
+
+  /**
+   * 截取 Iframe 截图
+   * @param iframeId Iframe ID
+   * @param options 截图选项
+   */
+  takeScreenshot(
+    iframeId: string,
+    options?: ScreenshotOptions
+  ): Promise<string>;
+}
+
+/**
+ * 安全报告接口
+ */
+export interface SecurityReport {
+  /** 报告 ID */
+  id: string;
+  /** Iframe ID */
+  iframeId: string;
+  /** 生成时间 */
+  timestamp: number;
+  /** 安全等级 */
+  securityLevel: 'low' | 'medium' | 'high' | 'critical';
+  /** 检测到的威胁 */
+  threats: Array<{
+    type: string;
+    severity: 'low' | 'medium' | 'high' | 'critical';
+    description: string;
+    recommendation: string;
+  }>;
+  /** 资源使用情况 */
+  resourceUsage: {
+    memory: number;
+    cpu: number;
+    network: number;
+  };
+  /** 违规行为 */
+  violations: Array<{
+    type: string;
+    description: string;
+    timestamp: number;
+  }>;
+  /** 建议措施 */
+  recommendations: string[];
+}
+
+/**
+ * 页面信息接口
+ */
+export interface PageInfo {
+  /** 页面 URL */
+  url: string;
+  /** 页面标题 */
+  title: string;
+  /** 页面状态 */
+  readyState: DocumentReadyState;
+  /** 视口大小 */
+  viewport: Rectangle;
+  /** 页面大小 */
+  pageSize: {
+    width: number;
+    height: number;
+  };
+  /** 滚动位置 */
+  scrollPosition: Point;
+  /** 元素统计 */
+  elementStats: {
+    total: number;
+    visible: number;
+    interactive: number;
+  };
+}
+
+/**
+ * 截图选项接口
+ */
+export interface ScreenshotOptions {
+  /** 截图格式 */
+  format?: 'png' | 'jpeg' | 'webp';
+  /** 图片质量 (0-1) */
+  quality?: number;
+  /** 截图区域 */
+  clip?: Rectangle;
+  /** 是否包含背景 */
+  omitBackground?: boolean;
+  /** 设备像素比 */
+  deviceScaleFactor?: number;
+}
+
 /**
  * 可点击性分析结果
  */
