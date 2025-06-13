@@ -255,6 +255,8 @@ export interface ClickOptions {
   offset?: Point;
   /** 是否强制点击 */
   force?: boolean;
+  /** 点击延迟（毫秒） */
+  delay?: number;
 }
 
 /**
