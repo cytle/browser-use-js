@@ -2,19 +2,8 @@
  * @file purpose: Iframe 管理器实现
  */
 
-import {
-  IIframeManager,
-  IframeConfig,
-  IframeInstance,
-  IframeStatus,
-  IframeSandboxPermission,
-  ICrossOriginProxy,
-  ISecurityManager,
-  ProxyConfig,
-  SecurityConfig,
-} from '../../types';
-import { createCrossOriginProxy } from '../proxy';
-import { createSecurityManager } from '../security';
+import type { IIframeManager, IframeConfig, IframeInstance } from '../../types';
+import { IframeSandboxPermission, IframeStatus } from '../../types';
 
 /**
  * Iframe 管理器实现类

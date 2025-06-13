@@ -2,7 +2,7 @@
  * @file purpose: Iframe DOM 适配器实现
  */
 
-import {
+import type {
   IDOMAdapter,
   ElementInfo,
   ClickOptions,
@@ -10,12 +10,10 @@ import {
   ActionResult,
   PageInfo,
   ScreenshotOptions,
-  DOMOperationType,
   DOMOperationMessage,
   DOMOperationResponseMessage,
-  MessageType,
-  Point,
 } from '../../types';
+import { DOMOperationType, MessageType } from '../../types';
 import { MessageBridge } from '../bridge';
 
 /**

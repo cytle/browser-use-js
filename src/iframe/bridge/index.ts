@@ -2,20 +2,16 @@
  * @file purpose: Iframe 消息桥接系统实现
  */
 
-import {
+import type {
   IMessageBridge,
   MessageBridgeConfig,
   IframeMessage,
-  MessageType,
   MessageHandler,
   IframeInstance,
-  BaseMessage,
-  HeartbeatMessage,
   HandshakeMessage,
-  DOMOperationMessage,
-  DOMOperationResponseMessage,
-  ErrorReportMessage,
+  HeartbeatMessage,
 } from '../../types';
+import { MessageType } from '../../types';
 
 /**
  * 消息桥接系统实现类

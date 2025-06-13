@@ -5,12 +5,7 @@
  * 包括请求代理、域名白名单管理、缓存机制和重试逻辑。
  */
 
-import type {
-  ICrossOriginProxy,
-  ProxyConfig,
-  BaseConfig,
-  Result,
-} from '../../types';
+import type { ICrossOriginProxy, ProxyConfig } from '../../types';
 
 /**
  * 缓存项接口

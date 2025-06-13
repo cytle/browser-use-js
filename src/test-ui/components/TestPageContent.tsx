@@ -628,23 +628,27 @@ export function TestPageContent() {
                   ARIA 按钮
                 </div>
 
-                <div
-                  role='tab'
-                  tabIndex={0}
-                  aria-selected='false'
-                  onClick={() => alert('ARIA 标签页点击')}
-                  className='px-4 py-2 bg-gray-200 text-gray-700 rounded cursor-pointer hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500'
-                >
-                  ARIA 标签页
+                <div role='tablist'>
+                  <div
+                    role='tab'
+                    tabIndex={0}
+                    aria-selected='false'
+                    onClick={() => alert('ARIA 标签页点击')}
+                    className='px-4 py-2 bg-gray-200 text-gray-700 rounded cursor-pointer hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500'
+                  >
+                    ARIA 标签页
+                  </div>
                 </div>
 
-                <div
-                  role='menuitem'
-                  tabIndex={0}
-                  onClick={() => alert('ARIA 菜单项点击')}
-                  className='px-4 py-2 bg-green-500 text-white rounded cursor-pointer hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500'
-                >
-                  ARIA 菜单项
+                <div role='menu'>
+                  <div
+                    role='menuitem'
+                    tabIndex={0}
+                    onClick={() => alert('ARIA 菜单项点击')}
+                    className='px-4 py-2 bg-green-500 text-white rounded cursor-pointer hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500'
+                  >
+                    ARIA 菜单项
+                  </div>
                 </div>
               </div>
             </div>
