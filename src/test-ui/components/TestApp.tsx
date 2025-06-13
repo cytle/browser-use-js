@@ -13,7 +13,6 @@ import { LogViewer } from './LogViewer';
 import { PerformanceMonitor } from './PerformanceMonitor';
 import { BrowserUseDemo } from './BrowserUseDemo';
 import { TestPageContent } from './TestPageContent';
-import { IframeTestPage } from './IframeTestPage';
 import { useTestState } from '../hooks/useTestState';
 import { getVersionInfo } from '../../main';
 import {
@@ -36,7 +35,7 @@ export function TestApp() {
   const { logs, addLog } = useTestState();
   const [versionInfo, setVersionInfo] = useState<any>(null);
   const [activeTab, setActiveTab] = useState('demo');
-  const [useIframeMode, setUseIframeMode] = useState(false);
+  const [useIframeMode, setUseIframeMode] = useState(true);
 
   useEffect(() => {
     try {
@@ -91,72 +90,7 @@ export function TestApp() {
               {/* 左侧内容区域 - 测试页面内容 */}
               <div className='flex-1 overflow-hidden'>
                 {useIframeMode ? (
-                  <IframeTestPage
-                    showControls={false}
-                    containerClassName='h-full'
-                    defaultUrl={
-                      'data:text/html,' +
-                      encodeURIComponent(`
-                      <!DOCTYPE html>
-                      <html>
-                      <head>
-                        <title>Browser-Use JS 测试页面</title>
-                        <meta charset="utf-8">
-                        <style>
-                          body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; margin: 0; }
-                          .container { max-width: 100%; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-                          .btn { padding: 10px 20px; margin: 5px; border: none; border-radius: 4px; cursor: pointer; background: #007bff; color: white; }
-                          .btn:hover { background: #0056b3; }
-                          .input { padding: 8px; margin: 5px; border: 1px solid #ddd; border-radius: 4px; width: 200px; }
-                          .card { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 4px; }
-                          .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-                        </style>
-                      </head>
-                      <body>
-                        <div class="container">
-                          <h1>🚀 Browser-Use JS Iframe 测试页面</h1>
-                          <p>这是一个在 Iframe 沙盒中运行的测试页面，用于测试 AI 代理的交互能力。</p>
-
-                          <div class="grid">
-                            <div class="card">
-                              <h3>按钮测试</h3>
-                              <button class="btn" onclick="alert('按钮1被点击!')">点击按钮1</button>
-                              <button class="btn" onclick="alert('按钮2被点击!')">点击按钮2</button>
-                              <button class="btn" onclick="document.getElementById('result').innerHTML='按钮3被点击!'">点击按钮3</button>
-                            </div>
-
-                            <div class="card">
-                              <h3>表单测试</h3>
-                              <input type="text" class="input" placeholder="请输入文本" id="textInput">
-                              <button class="btn" onclick="document.getElementById('result').innerHTML='输入内容: ' + document.getElementById('textInput').value">提交文本</button>
-                            </div>
-
-                            <div class="card">
-                              <h3>链接测试</h3>
-                              <a href="#" onclick="alert('链接被点击!'); return false;" style="color: #007bff; text-decoration: underline;">测试链接</a>
-                            </div>
-
-                            <div class="card">
-                              <h3>选择器测试</h3>
-                              <select id="selector" onchange="document.getElementById('result').innerHTML='选择了: ' + this.value">
-                                <option value="">请选择</option>
-                                <option value="选项1">选项1</option>
-                                <option value="选项2">选项2</option>
-                                <option value="选项3">选项3</option>
-                              </select>
-                            </div>
-                          </div>
-
-                          <div class="card">
-                            <h3>结果显示</h3>
-                            <div id="result" style="padding: 10px; background: #e9ecef; border-radius: 4px; min-height: 40px;">等待操作...</div>
-                          </div>
-                        </div>
-                      </body>
-                      </html>
-                    `)
-                    }
-                  />
+                  <iframe className='h-full w-full' src='iframe.html' />
                 ) : (
                   <TestPageContent />
                 )}
@@ -207,7 +141,7 @@ export function TestApp() {
                 className='h-full flex flex-col'
               >
                 <div className='px-2 py-2 border-b border-slate-200 dark:border-slate-700'>
-                  <TabsList className='grid w-full grid-cols-4 gap-1 h-auto'>
+                  <TabsList className='grid w-full grid-cols-3 gap-1 h-auto'>
                     <TabsTrigger
                       value='demo'
                       className='flex flex-col items-center gap-1 text-xs p-2'
@@ -228,13 +162,6 @@ export function TestApp() {
                     >
                       <Globe className='h-3 w-3' />
                       DOM
-                    </TabsTrigger>
-                    <TabsTrigger
-                      value='iframe'
-                      className='flex flex-col items-center gap-1 text-xs p-2'
-                    >
-                      <Frame className='h-3 w-3' />
-                      Iframe
                     </TabsTrigger>
                   </TabsList>
                   <TabsList className='grid w-full grid-cols-3 gap-1 h-auto mt-1'>
@@ -306,13 +233,6 @@ export function TestApp() {
                         <DOMTest />
                       </CardContent>
                     </Card>
-                  </TabsContent>
-
-                  {/* Iframe 测试页面 */}
-                  <TabsContent value='iframe' className='mt-0'>
-                    <div className='h-full'>
-                      <IframeTestPage showControls={true} />
-                    </div>
                   </TabsContent>
 
                   {/* 代理测试 */}
