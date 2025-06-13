@@ -24,7 +24,6 @@ import {
   FileText,
   Sparkles,
   GripVertical,
-  Frame,
   ToggleLeft,
   ToggleRight,
 } from 'lucide-react';
@@ -192,17 +191,7 @@ export function TestApp() {
                 <div className='flex-1 overflow-auto p-2'>
                   {/* 综合演示 */}
                   <TabsContent value='demo' className='mt-0'>
-                    <Card>
-                      <CardHeader className='pb-2'>
-                        <CardTitle className='text-lg flex items-center gap-2'>
-                          <Activity className='h-4 w-4 text-blue-500' />
-                          综合演示
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className='pt-0'>
-                        <BrowserUseDemo />
-                      </CardContent>
-                    </Card>
+                    <BrowserUseDemo />
                   </TabsContent>
 
                   {/* 系统测试 */}

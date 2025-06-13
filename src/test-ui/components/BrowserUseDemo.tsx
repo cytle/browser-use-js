@@ -1,8 +1,8 @@
 /**
- * @file purpose: Browser-Use JS 综合演示组件
+ * @file purpose: Browser-Use JS 自定义任务演示组件
  *
- * 这个组件集成了所有现有功能，提供一个完整的 Browser-Use JS 工作流程演示。
- * 包括系统初始化、DOM 处理、AI 代理任务执行等核心功能的端到端演示。
+ * 这个组件提供一个简化的 Browser-Use JS 自定义任务执行界面。
+ * 用户可以输入任务描述，AI 代理将解析并执行相应的操作。
  */
 
 import { useState, useEffect } from 'react';
@@ -14,30 +14,23 @@ import {
   CardTitle,
 } from './ui/card';
 import { Button } from './ui/button';
-import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { Badge } from './ui/badge';
 import { Alert, AlertDescription } from './ui/alert';
 import { Progress } from './ui/progress';
 import { Separator } from './ui/separator';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import {
   Play,
   Bot,
-  Search,
-  MousePointer,
   CheckCircle,
   AlertCircle,
   Clock,
-  Zap,
   Eye,
   Brain,
-  Settings,
-  Activity,
+  RotateCcw,
 } from 'lucide-react';
 import { useTestState } from '../hooks/useTestState';
 import { initialize } from '../../main';
-import { DemoTestPage } from './DemoTestPage';
 
 interface DemoStep {
   id: string;
@@ -47,151 +40,46 @@ interface DemoStep {
   result?: string;
 }
 
-interface DemoScenario {
-  id: string;
-  title: string;
-  description: string;
-  steps: DemoStep[];
-}
-
 export function BrowserUseDemo() {
   const { addLog, isInitialized, setInitialized } = useTestState();
-  const [currentScenario, setCurrentScenario] = useState<string>('web-search');
   const [isRunning, setIsRunning] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [searchQuery, setSearchQuery] = useState('Browser automation with AI');
-  const [targetUrl, setTargetUrl] = useState('https://example.com');
   const [customTask, setCustomTask] =
     useState('找到页面中的搜索框并输入查询内容');
 
-  // 演示场景配置
-  const scenarios: DemoScenario[] = [
+  // 自定义任务步骤
+  const [demoSteps, setDemoSteps] = useState<DemoStep[]>([
     {
-      id: 'web-search',
-      title: '🔍 智能网页搜索',
-      description: '演示 AI 代理如何自动在网页中执行搜索任务',
-      steps: [
-        {
-          id: 'init',
-          title: '系统初始化',
-          description: '初始化 Browser-Use JS 系统',
-          status: 'pending',
-        },
-        {
-          id: 'navigate',
-          title: '页面导航',
-          description: '导航到目标网页',
-          status: 'pending',
-        },
-        {
-          id: 'analyze',
-          title: 'DOM 分析',
-          description: '分析页面结构，识别可交互元素',
-          status: 'pending',
-        },
-        {
-          id: 'search',
-          title: '执行搜索',
-          description: '找到搜索框并输入查询内容',
-          status: 'pending',
-        },
-        {
-          id: 'verify',
-          title: '结果验证',
-          description: '验证搜索结果并提取信息',
-          status: 'pending',
-        },
-      ],
+      id: 'init',
+      title: '系统初始化',
+      description: '初始化 Browser-Use JS 系统',
+      status: 'pending',
     },
     {
-      id: 'form-filling',
-      title: '📝 智能表单填写',
-      description: '演示 AI 代理如何自动识别并填写网页表单',
-      steps: [
-        {
-          id: 'init',
-          title: '系统初始化',
-          description: '初始化 Browser-Use JS 系统',
-          status: 'pending',
-        },
-        {
-          id: 'scan',
-          title: '表单扫描',
-          description: '扫描页面中的表单元素',
-          status: 'pending',
-        },
-        {
-          id: 'identify',
-          title: '字段识别',
-          description: '识别表单字段类型和要求',
-          status: 'pending',
-        },
-        {
-          id: 'fill',
-          title: '自动填写',
-          description: '根据字段类型自动填写表单',
-          status: 'pending',
-        },
-        {
-          id: 'submit',
-          title: '提交验证',
-          description: '验证填写内容并提交表单',
-          status: 'pending',
-        },
-      ],
+      id: 'parse',
+      title: '任务解析',
+      description: '解析用户输入的任务描述',
+      status: 'pending',
     },
     {
-      id: 'custom-task',
-      title: '🎯 自定义任务',
-      description: '演示 AI 代理执行用户自定义的复杂任务',
-      steps: [
-        {
-          id: 'init',
-          title: '系统初始化',
-          description: '初始化 Browser-Use JS 系统',
-          status: 'pending',
-        },
-        {
-          id: 'parse',
-          title: '任务解析',
-          description: '解析用户输入的任务描述',
-          status: 'pending',
-        },
-        {
-          id: 'plan',
-          title: '执行计划',
-          description: '制定任务执行计划',
-          status: 'pending',
-        },
-        {
-          id: 'execute',
-          title: '任务执行',
-          description: '按计划执行各个步骤',
-          status: 'pending',
-        },
-        {
-          id: 'report',
-          title: '结果报告',
-          description: '生成任务执行报告',
-          status: 'pending',
-        },
-      ],
+      id: 'plan',
+      title: '执行计划',
+      description: '制定任务执行计划',
+      status: 'pending',
     },
-  ];
-
-  const [demoSteps, setDemoSteps] = useState<DemoStep[]>(
-    scenarios.find(s => s.id === currentScenario)?.steps || []
-  );
-
-  useEffect(() => {
-    const scenario = scenarios.find(s => s.id === currentScenario);
-    if (scenario) {
-      setDemoSteps(
-        scenario.steps.map(step => ({ ...step, status: 'pending' }))
-      );
-      setProgress(0);
-    }
-  }, [currentScenario]);
+    {
+      id: 'execute',
+      title: '任务执行',
+      description: '按计划执行各个步骤',
+      status: 'pending',
+    },
+    {
+      id: 'report',
+      title: '结果报告',
+      description: '生成任务执行报告',
+      status: 'pending',
+    },
+  ]);
 
   const updateStepStatus = (
     stepId: string,
@@ -211,12 +99,14 @@ export function BrowserUseDemo() {
       return;
     }
 
+    if (!customTask.trim()) {
+      addLog('⚠️ 请输入任务描述', 'warning');
+      return;
+    }
+
     setIsRunning(true);
     setProgress(0);
-    addLog(
-      `🚀 开始执行演示场景: ${scenarios.find(s => s.id === currentScenario)?.title}`,
-      'info'
-    );
+    addLog(`🚀 开始执行自定义任务: ${customTask}`, 'info');
 
     try {
       for (let i = 0; i < demoSteps.length; i++) {
@@ -225,7 +115,7 @@ export function BrowserUseDemo() {
         addLog(`▶️ 执行步骤: ${step.title}`, 'info');
 
         // 模拟步骤执行
-        await simulateStep(step, currentScenario);
+        await simulateStep(step);
 
         updateStepStatus(step.id, 'completed', '执行成功');
         setProgress(((i + 1) / demoSteps.length) * 100);
@@ -234,9 +124,9 @@ export function BrowserUseDemo() {
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
 
-      addLog('✅ 演示场景执行完成', 'success');
+      addLog('✅ 自定义任务执行完成', 'success');
     } catch (error) {
-      addLog(`❌ 演示执行失败: ${error}`, 'error');
+      addLog(`❌ 任务执行失败: ${error}`, 'error');
       const currentStepIndex = demoSteps.findIndex(
         step => step.status === 'running'
       );
@@ -248,7 +138,7 @@ export function BrowserUseDemo() {
     }
   };
 
-  const simulateStep = async (step: DemoStep, scenario: string) => {
+  const simulateStep = async (step: DemoStep) => {
     const delay = Math.random() * 1000 + 1000; // 1-2秒随机延迟
 
     switch (step.id) {
@@ -265,35 +155,24 @@ export function BrowserUseDemo() {
         }
         break;
 
-      case 'navigate':
-        await new Promise(resolve => setTimeout(resolve, delay));
-        addLog(`🌐 导航到: ${targetUrl}`, 'info');
-        break;
-
-      case 'analyze': {
-        await new Promise(resolve => setTimeout(resolve, delay));
-        const elements = document.querySelectorAll('*');
-        addLog(`🔍 DOM 分析完成，发现 ${elements.length} 个元素`, 'info');
-        break;
-      }
-
-      case 'search':
-        await new Promise(resolve => setTimeout(resolve, delay));
-        addLog(`🔍 执行搜索: &quot;${searchQuery}&quot;`, 'info');
-        break;
-
-      case 'scan': {
-        await new Promise(resolve => setTimeout(resolve, delay));
-        const forms = document.querySelectorAll(
-          'form, input, textarea, select'
-        );
-        addLog(`📝 发现 ${forms.length} 个表单元素`, 'info');
-        break;
-      }
-
       case 'parse':
         await new Promise(resolve => setTimeout(resolve, delay));
         addLog(`📋 解析任务: &quot;${customTask}&quot;`, 'info');
+        break;
+
+      case 'plan':
+        await new Promise(resolve => setTimeout(resolve, delay));
+        addLog('🎯 制定执行计划完成', 'info');
+        break;
+
+      case 'execute':
+        await new Promise(resolve => setTimeout(resolve, delay * 1.5));
+        addLog('⚡ 任务执行中...', 'info');
+        break;
+
+      case 'report':
+        await new Promise(resolve => setTimeout(resolve, delay));
+        addLog('📊 生成执行报告完成', 'info');
         break;
 
       default:
@@ -307,7 +186,7 @@ export function BrowserUseDemo() {
       prev.map(step => ({ ...step, status: 'pending', result: undefined }))
     );
     setProgress(0);
-    addLog('🔄 演示已重置', 'info');
+    addLog('🔄 任务已重置', 'info');
   };
 
   const getStepIcon = (status: DemoStep['status']) => {
@@ -327,102 +206,63 @@ export function BrowserUseDemo() {
 
   return (
     <div className='space-y-6'>
-      {/* 演示控制面板 */}
+      {/* 任务输入面板 */}
       <Card>
         <CardHeader>
           <CardTitle className='flex items-center gap-2'>
-            <Activity className='h-5 w-5' />
-            Browser-Use JS 综合演示
+            <Bot className='h-5 w-5' />
+            AI 代理自定义任务
           </CardTitle>
           <CardDescription>
-            选择演示场景，体验 AI 代理的完整工作流程
+            输入任务描述，AI 代理将自动解析并执行相应操作
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <Tabs value={currentScenario} onValueChange={setCurrentScenario}>
-            <TabsList className='grid w-full grid-cols-4'>
-              <TabsTrigger value='web-search'>智能搜索</TabsTrigger>
-              <TabsTrigger value='form-filling'>表单填写</TabsTrigger>
-              <TabsTrigger value='custom-task'>自定义任务</TabsTrigger>
-              <TabsTrigger value='test-page'>测试页面</TabsTrigger>
-            </TabsList>
+        <CardContent className='space-y-4'>
+          <div className='space-y-2'>
+            <label className='text-sm font-medium'>任务描述</label>
+            <Textarea
+              value={customTask}
+              onChange={e => setCustomTask(e.target.value)}
+              placeholder='描述你希望 AI 代理执行的任务，例如：
+• 找到页面中的搜索框并输入"人工智能"
+• 点击页面上的"登录"按钮
+• 填写联系表单并提交
+• 查找页面中的价格信息并记录'
+              rows={4}
+              className='resize-none'
+            />
+          </div>
 
-            <TabsContent value='web-search' className='space-y-4'>
-              <div className='space-y-2'>
-                <label className='text-sm font-medium'>目标网址</label>
-                <Input
-                  value={targetUrl}
-                  onChange={e => setTargetUrl(e.target.value)}
-                  placeholder='https://example.com'
-                />
-              </div>
-              <div className='space-y-2'>
-                <label className='text-sm font-medium'>搜索查询</label>
-                <Input
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  placeholder='输入搜索内容'
-                />
-              </div>
-            </TabsContent>
-
-            <TabsContent value='form-filling' className='space-y-4'>
-              <Alert>
-                <Settings className='h-4 w-4' />
-                <AlertDescription>
-                  此演示将自动识别页面中的表单并智能填写
-                </AlertDescription>
-              </Alert>
-            </TabsContent>
-
-            <TabsContent value='custom-task' className='space-y-4'>
-              <div className='space-y-2'>
-                <label className='text-sm font-medium'>任务描述</label>
-                <Textarea
-                  value={customTask}
-                  onChange={e => setCustomTask(e.target.value)}
-                  placeholder='描述你希望 AI 代理执行的任务...'
-                  rows={3}
-                />
-              </div>
-            </TabsContent>
-
-            <TabsContent value='test-page' className='space-y-4'>
-              <Alert>
-                <Eye className='h-4 w-4' />
-                <AlertDescription>
-                  这是一个包含各种交互元素的测试页面，可以用来测试 DOM 处理和 AI
-                  代理功能
-                </AlertDescription>
-              </Alert>
-              <div className='border rounded-lg overflow-hidden'>
-                <DemoTestPage />
-              </div>
-            </TabsContent>
-          </Tabs>
-
-          <Separator className='my-4' />
+          <Separator />
 
           <div className='flex gap-2'>
             <Button
               onClick={runDemo}
-              disabled={isRunning || !isInitialized}
+              disabled={isRunning || !isInitialized || !customTask.trim()}
               className='flex-1'
             >
               <Play className='h-4 w-4 mr-2' />
-              {isRunning ? '执行中...' : '开始演示'}
+              {isRunning ? '执行中...' : '开始执行任务'}
             </Button>
             <Button onClick={resetDemo} variant='outline' disabled={isRunning}>
+              <RotateCcw className='h-4 w-4 mr-2' />
               重置
             </Button>
           </div>
 
           {!isInitialized && (
-            <Alert className='mt-4'>
+            <Alert>
               <AlertCircle className='h-4 w-4' />
               <AlertDescription>
                 请先在&quot;系统测试&quot;标签页中初始化系统
               </AlertDescription>
+            </Alert>
+          )}
+
+          {!customTask.trim() && isInitialized && (
+            <Alert>
+              <AlertCircle className='h-4 w-4' />
+              <AlertDescription>请输入任务描述后再开始执行</AlertDescription>
             </Alert>
           )}
         </CardContent>
@@ -433,14 +273,14 @@ export function BrowserUseDemo() {
         <Card>
           <CardHeader>
             <CardTitle className='flex items-center gap-2'>
-              <Zap className='h-5 w-5' />
+              <Brain className='h-5 w-5' />
               执行进度
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className='space-y-2'>
               <div className='flex items-center justify-between text-sm'>
-                <span>总体进度</span>
+                <span>任务进度</span>
                 <span>{Math.round(progress)}%</span>
               </div>
               <Progress value={progress} className='w-full' />
@@ -449,7 +289,7 @@ export function BrowserUseDemo() {
         </Card>
       )}
 
-      {/* 步骤详情 */}
+      {/* 执行步骤 */}
       <Card>
         <CardHeader>
           <CardTitle className='flex items-center gap-2'>
@@ -457,7 +297,7 @@ export function BrowserUseDemo() {
             执行步骤
           </CardTitle>
           <CardDescription>
-            {scenarios.find(s => s.id === currentScenario)?.description}
+            AI 代理将按以下步骤执行你的自定义任务
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -503,43 +343,42 @@ export function BrowserUseDemo() {
         </CardContent>
       </Card>
 
-      {/* 演示说明 */}
+      {/* 使用说明 */}
       <Card>
         <CardHeader>
           <CardTitle className='flex items-center gap-2'>
             <Brain className='h-5 w-5' />
-            演示说明
+            使用说明
           </CardTitle>
         </CardHeader>
-        <CardContent className='space-y-4'>
-          <div className='grid gap-4 md:grid-cols-3'>
-            <div className='space-y-2'>
-              <h4 className='font-medium flex items-center gap-2'>
-                <Search className='h-4 w-4' />
-                智能搜索
-              </h4>
-              <p className='text-sm text-muted-foreground'>
-                演示 AI 代理如何自动导航到网页，识别搜索框，并执行搜索操作
-              </p>
-            </div>
-            <div className='space-y-2'>
-              <h4 className='font-medium flex items-center gap-2'>
-                <MousePointer className='h-4 w-4' />
-                表单填写
-              </h4>
-              <p className='text-sm text-muted-foreground'>
-                展示 AI 代理智能识别表单字段类型，并根据上下文自动填写内容
-              </p>
-            </div>
-            <div className='space-y-2'>
-              <h4 className='font-medium flex items-center gap-2'>
-                <Bot className='h-4 w-4' />
-                自定义任务
-              </h4>
-              <p className='text-sm text-muted-foreground'>
-                体验 AI 代理理解自然语言任务描述，并制定执行计划的能力
-              </p>
-            </div>
+        <CardContent className='space-y-3'>
+          <div className='text-sm text-muted-foreground space-y-2'>
+            <p>
+              <strong>1. 任务描述：</strong>用自然语言描述你希望 AI
+              代理执行的操作
+            </p>
+            <p>
+              <strong>2. 系统初始化：</strong>
+              确保在&quot;系统测试&quot;页面已完成初始化
+            </p>
+            <p>
+              <strong>3. 执行监控：</strong>观察执行步骤和进度，查看详细日志
+            </p>
+            <p>
+              <strong>4. 结果验证：</strong>任务完成后检查执行结果和生成的报告
+            </p>
+          </div>
+
+          <Separator />
+
+          <div className='text-sm'>
+            <p className='font-medium mb-2'>示例任务：</p>
+            <ul className='space-y-1 text-muted-foreground'>
+              <li>• 在当前页面查找所有链接并统计数量</li>
+              <li>• 识别页面中的表单元素并分析其类型</li>
+              <li>• 查找页面标题并提取关键信息</li>
+              <li>• 模拟用户点击特定按钮或链接</li>
+            </ul>
           </div>
         </CardContent>
       </Card>
