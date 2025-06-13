@@ -4,7 +4,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { Badge } from './ui/badge';
-import { Separator } from './ui/separator';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { SystemTest } from './SystemTest';
@@ -23,12 +22,16 @@ import {
   BarChart3,
   FileText,
   Sparkles,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
+import { Button } from './ui/button';
 
 export function TestApp() {
   const { logs, addLog } = useTestState();
   const [versionInfo, setVersionInfo] = useState<any>(null);
   const [activeTab, setActiveTab] = useState('demo');
+  const [isRightPanelCollapsed, setIsRightPanelCollapsed] = useState(false);
 
   useEffect(() => {
     try {
@@ -41,193 +44,240 @@ export function TestApp() {
   }, [addLog]);
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800'>
-      <div className='container mx-auto p-6'>
-        {/* 头部信息 */}
-        <div className='mb-8'>
-          <div className='flex items-center justify-between mb-4'>
-            <div>
-              <h1 className='text-4xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-3'>
-                <Sparkles className='h-10 w-10 text-blue-500' />
-                Browser-Use JS
-              </h1>
-              <p className='text-slate-600 dark:text-slate-400 mt-2 text-lg'>
-                AI 代理浏览器交互演示平台
+    <div className='h-screen flex bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800'>
+      {/* 左侧主内容区域 - 测试页面 */}
+      <div
+        className={`flex-1 transition-all duration-300 ${isRightPanelCollapsed ? 'mr-0' : 'mr-2'}`}
+      >
+        <div className='h-full bg-white dark:bg-slate-800 rounded-l-lg shadow-lg overflow-hidden'>
+          <div className='h-full flex flex-col'>
+            {/* 左侧头部 */}
+            <div className='p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900'>
+              <h2 className='text-xl font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2'>
+                <Globe className='h-5 w-5 text-blue-500' />
+                测试页面区域
+              </h2>
+              <p className='text-sm text-slate-600 dark:text-slate-400 mt-1'>
+                这里将显示被测试的网页内容
               </p>
             </div>
-            {versionInfo && (
-              <div className='text-right'>
-                <Badge variant='secondary' className='text-lg px-4 py-2'>
-                  v{versionInfo.version}
-                </Badge>
-                <div className='text-sm text-slate-500 mt-2'>
-                  Agent({versionInfo.modules.agent}) | Browser(
-                  {versionInfo.modules.browser}) | Controller(
-                  {versionInfo.modules.controller}) | DOM(
-                  {versionInfo.modules.dom})
+
+            {/* 左侧内容区域 - 可以嵌入iframe或其他测试页面 */}
+            <div className='flex-1 p-4 overflow-auto'>
+              <div className='h-full bg-slate-100 dark:bg-slate-700 rounded-lg flex items-center justify-center'>
+                <div className='text-center text-slate-500 dark:text-slate-400'>
+                  <Globe className='h-16 w-16 mx-auto mb-4 opacity-50' />
+                  <p className='text-lg font-medium mb-2'>测试页面区域</p>
+                  <p className='text-sm'>
+                    这里可以加载需要测试的网页内容
+                    <br />
+                    或者嵌入iframe来显示外部页面
+                  </p>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 右侧测试UI面板 */}
+      <div
+        className={`transition-all duration-300 ${isRightPanelCollapsed ? 'w-12' : 'w-96'} flex flex-col bg-white dark:bg-slate-800 rounded-r-lg shadow-lg`}
+      >
+        {/* 折叠/展开按钮 */}
+        <div className='p-2 border-b border-slate-200 dark:border-slate-700'>
+          <Button
+            variant='ghost'
+            size='sm'
+            onClick={() => setIsRightPanelCollapsed(!isRightPanelCollapsed)}
+            className='w-full flex items-center justify-center'
+          >
+            {isRightPanelCollapsed ? (
+              <ChevronLeft className='h-4 w-4' />
+            ) : (
+              <ChevronRight className='h-4 w-4' />
             )}
-          </div>
-          <Separator />
+          </Button>
         </div>
 
-        {/* 主要内容区域 - 标签页布局 */}
-        <Tabs
-          value={activeTab}
-          onValueChange={setActiveTab}
-          className='space-y-6'
-        >
-          <TabsList className='grid w-full grid-cols-6'>
-            <TabsTrigger value='demo' className='flex items-center gap-2'>
-              <Activity className='h-4 w-4' />
-              综合演示
-            </TabsTrigger>
-            <TabsTrigger value='system' className='flex items-center gap-2'>
-              <Settings className='h-4 w-4' />
-              系统测试
-            </TabsTrigger>
-            <TabsTrigger value='dom' className='flex items-center gap-2'>
-              <Globe className='h-4 w-4' />
-              DOM 处理
-            </TabsTrigger>
-            <TabsTrigger value='agent' className='flex items-center gap-2'>
-              <Bot className='h-4 w-4' />
-              AI 代理
-            </TabsTrigger>
-            <TabsTrigger
-              value='performance'
-              className='flex items-center gap-2'
-            >
-              <BarChart3 className='h-4 w-4' />
-              性能监控
-            </TabsTrigger>
-            <TabsTrigger value='logs' className='flex items-center gap-2'>
-              <FileText className='h-4 w-4' />
-              日志查看
-            </TabsTrigger>
-          </TabsList>
-
-          {/* 综合演示 */}
-          <TabsContent value='demo'>
-            <Card>
-              <CardHeader>
-                <CardTitle className='text-2xl flex items-center gap-2'>
-                  <Activity className='h-6 w-6 text-blue-500' />
-                  🎯 综合演示
-                </CardTitle>
-                <p className='text-muted-foreground'>
-                  体验 Browser-Use JS 的完整工作流程，从系统初始化到 AI
-                  代理任务执行
+        {/* 右侧面板内容 */}
+        {!isRightPanelCollapsed && (
+          <div className='flex-1 flex flex-col overflow-hidden'>
+            {/* 右侧头部信息 */}
+            <div className='p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900'>
+              <div className='mb-3'>
+                <h1 className='text-2xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2'>
+                  <Sparkles className='h-6 w-6 text-blue-500' />
+                  Browser-Use JS
+                </h1>
+                <p className='text-slate-600 dark:text-slate-400 mt-1 text-sm'>
+                  AI 代理浏览器交互演示平台
                 </p>
-              </CardHeader>
-              <CardContent>
-                <BrowserUseDemo />
-              </CardContent>
-            </Card>
-          </TabsContent>
+              </div>
+              {versionInfo && (
+                <div className='text-center'>
+                  <Badge variant='secondary' className='text-sm px-3 py-1'>
+                    v{versionInfo.version}
+                  </Badge>
+                  <div className='text-xs text-slate-500 mt-1'>
+                    Agent({versionInfo.modules.agent}) | Browser(
+                    {versionInfo.modules.browser})
+                  </div>
+                </div>
+              )}
+            </div>
 
-          {/* 系统测试 */}
-          <TabsContent value='system'>
-            <Card>
-              <CardHeader>
-                <CardTitle className='text-2xl flex items-center gap-2'>
-                  <Settings className='h-6 w-6 text-green-500' />
-                  🔧 系统测试
-                </CardTitle>
-                <p className='text-muted-foreground'>
-                  初始化和配置 Browser-Use JS 系统
-                </p>
-              </CardHeader>
-              <CardContent>
-                <SystemTest />
-              </CardContent>
-            </Card>
-          </TabsContent>
+            {/* 右侧主要内容区域 - 标签页布局 */}
+            <div className='flex-1 overflow-hidden'>
+              <Tabs
+                value={activeTab}
+                onValueChange={setActiveTab}
+                className='h-full flex flex-col'
+              >
+                <div className='px-2 py-2 border-b border-slate-200 dark:border-slate-700'>
+                  <TabsList className='grid w-full grid-cols-3 gap-1 h-auto'>
+                    <TabsTrigger
+                      value='demo'
+                      className='flex flex-col items-center gap-1 text-xs p-2'
+                    >
+                      <Activity className='h-3 w-3' />
+                      演示
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value='system'
+                      className='flex flex-col items-center gap-1 text-xs p-2'
+                    >
+                      <Settings className='h-3 w-3' />
+                      系统
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value='dom'
+                      className='flex flex-col items-center gap-1 text-xs p-2'
+                    >
+                      <Globe className='h-3 w-3' />
+                      DOM
+                    </TabsTrigger>
+                  </TabsList>
+                  <TabsList className='grid w-full grid-cols-3 gap-1 h-auto mt-1'>
+                    <TabsTrigger
+                      value='agent'
+                      className='flex flex-col items-center gap-1 text-xs p-2'
+                    >
+                      <Bot className='h-3 w-3' />
+                      代理
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value='performance'
+                      className='flex flex-col items-center gap-1 text-xs p-2'
+                    >
+                      <BarChart3 className='h-3 w-3' />
+                      性能
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value='logs'
+                      className='flex flex-col items-center gap-1 text-xs p-2'
+                    >
+                      <FileText className='h-3 w-3' />
+                      日志
+                    </TabsTrigger>
+                  </TabsList>
+                </div>
 
-          {/* DOM 处理 */}
-          <TabsContent value='dom'>
-            <Card>
-              <CardHeader>
-                <CardTitle className='text-2xl flex items-center gap-2'>
-                  <Globe className='h-6 w-6 text-purple-500' />
-                  🌐 DOM 处理
-                </CardTitle>
-                <p className='text-muted-foreground'>
-                  测试页面元素识别和交互功能
-                </p>
-              </CardHeader>
-              <CardContent>
-                <DOMTest />
-              </CardContent>
-            </Card>
-          </TabsContent>
+                <div className='flex-1 overflow-auto p-2'>
+                  {/* 综合演示 */}
+                  <TabsContent value='demo' className='mt-0 h-full'>
+                    <Card className='h-full'>
+                      <CardHeader className='pb-2'>
+                        <CardTitle className='text-lg flex items-center gap-2'>
+                          <Activity className='h-4 w-4 text-blue-500' />
+                          综合演示
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className='pt-0'>
+                        <BrowserUseDemo />
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
 
-          {/* AI 代理 */}
-          <TabsContent value='agent'>
-            <Card>
-              <CardHeader>
-                <CardTitle className='text-2xl flex items-center gap-2'>
-                  <Bot className='h-6 w-6 text-orange-500' />
-                  🤖 AI 代理
-                </CardTitle>
-                <p className='text-muted-foreground'>
-                  测试 AI 代理的任务理解和执行能力
-                </p>
-              </CardHeader>
-              <CardContent>
-                <AgentTest />
-              </CardContent>
-            </Card>
-          </TabsContent>
+                  {/* 系统测试 */}
+                  <TabsContent value='system' className='mt-0 h-full'>
+                    <Card className='h-full'>
+                      <CardHeader className='pb-2'>
+                        <CardTitle className='text-lg flex items-center gap-2'>
+                          <Settings className='h-4 w-4 text-green-500' />
+                          系统测试
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className='pt-0'>
+                        <SystemTest />
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
 
-          {/* 性能监控 */}
-          <TabsContent value='performance'>
-            <Card>
-              <CardHeader>
-                <CardTitle className='text-2xl flex items-center gap-2'>
-                  <BarChart3 className='h-6 w-6 text-red-500' />
-                  📊 性能监控
-                </CardTitle>
-                <p className='text-muted-foreground'>
-                  监控系统性能和资源使用情况
-                </p>
-              </CardHeader>
-              <CardContent>
-                <PerformanceMonitor />
-              </CardContent>
-            </Card>
-          </TabsContent>
+                  {/* DOM 处理 */}
+                  <TabsContent value='dom' className='mt-0 h-full'>
+                    <Card className='h-full'>
+                      <CardHeader className='pb-2'>
+                        <CardTitle className='text-lg flex items-center gap-2'>
+                          <Globe className='h-4 w-4 text-purple-500' />
+                          DOM 处理
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className='pt-0'>
+                        <DOMTest />
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
 
-          {/* 日志查看 */}
-          <TabsContent value='logs'>
-            <Card>
-              <CardHeader>
-                <CardTitle className='text-2xl flex items-center gap-2'>
-                  <FileText className='h-6 w-6 text-indigo-500' />
-                  📝 日志查看
-                </CardTitle>
-                <p className='text-muted-foreground'>
-                  查看系统运行日志和调试信息
-                </p>
-              </CardHeader>
-              <CardContent>
-                <LogViewer logs={logs} />
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                  {/* AI 代理 */}
+                  <TabsContent value='agent' className='mt-0 h-full'>
+                    <Card className='h-full'>
+                      <CardHeader className='pb-2'>
+                        <CardTitle className='text-lg flex items-center gap-2'>
+                          <Bot className='h-4 w-4 text-orange-500' />
+                          AI 代理
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className='pt-0'>
+                        <AgentTest />
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
 
-        {/* 底部信息 */}
-        <div className='mt-12 pt-6 border-t border-slate-200 dark:border-slate-700'>
-          <div className='text-center text-sm text-slate-500 dark:text-slate-400'>
-            <p>Browser-Use JS - AI 代理浏览器交互框架</p>
-            <p className='mt-1'>
-              基于 TypeScript + Vite + React 构建 | 集成 Vercel AI SDK |
-              支持现代浏览器
-            </p>
+                  {/* 性能监控 */}
+                  <TabsContent value='performance' className='mt-0 h-full'>
+                    <Card className='h-full'>
+                      <CardHeader className='pb-2'>
+                        <CardTitle className='text-lg flex items-center gap-2'>
+                          <BarChart3 className='h-4 w-4 text-red-500' />
+                          性能监控
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className='pt-0'>
+                        <PerformanceMonitor />
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+
+                  {/* 日志查看 */}
+                  <TabsContent value='logs' className='mt-0 h-full'>
+                    <Card className='h-full'>
+                      <CardHeader className='pb-2'>
+                        <CardTitle className='text-lg flex items-center gap-2'>
+                          <FileText className='h-4 w-4 text-indigo-500' />
+                          日志查看
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className='pt-0'>
+                        <LogViewer logs={logs} />
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+                </div>
+              </Tabs>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
