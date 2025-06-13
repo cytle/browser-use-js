@@ -12,6 +12,7 @@ import { AgentTest } from './AgentTest';
 import { LogViewer } from './LogViewer';
 import { PerformanceMonitor } from './PerformanceMonitor';
 import { BrowserUseDemo } from './BrowserUseDemo';
+import { TestPageContent } from './TestPageContent';
 import { useTestState } from '../hooks/useTestState';
 import { getVersionInfo } from '../../main';
 import {
@@ -62,19 +63,9 @@ export function TestApp() {
               </p>
             </div>
 
-            {/* 左侧内容区域 - 可以嵌入iframe或其他测试页面 */}
-            <div className='flex-1 p-4 overflow-auto'>
-              <div className='h-full bg-slate-100 dark:bg-slate-700 rounded-lg flex items-center justify-center'>
-                <div className='text-center text-slate-500 dark:text-slate-400'>
-                  <Globe className='h-16 w-16 mx-auto mb-4 opacity-50' />
-                  <p className='text-lg font-medium mb-2'>测试页面区域</p>
-                  <p className='text-sm'>
-                    这里可以加载需要测试的网页内容
-                    <br />
-                    或者嵌入iframe来显示外部页面
-                  </p>
-                </div>
-              </div>
+            {/* 左侧内容区域 - 测试页面内容 */}
+            <div className='flex-1 overflow-hidden'>
+              <TestPageContent />
             </div>
           </div>
         </div>
