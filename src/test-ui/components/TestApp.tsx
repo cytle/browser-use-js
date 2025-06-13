@@ -2,7 +2,7 @@
  * @file purpose: 主要的测试应用组件
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Badge } from './ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
@@ -13,7 +13,6 @@ import { LogViewer } from './LogViewer';
 import { PerformanceMonitor } from './PerformanceMonitor';
 import { BrowserUseDemo } from './BrowserUseDemo';
 import { TestPageContent } from './TestPageContent';
-import { ClickableElementTest } from './ClickableElementTest';
 import { IframeTestPage } from './IframeTestPage';
 import { useTestState } from '../hooks/useTestState';
 import { getVersionInfo } from '../../main';
@@ -26,7 +25,6 @@ import {
   FileText,
   Sparkles,
   GripVertical,
-  MousePointer,
   Frame,
   ToggleLeft,
   ToggleRight,

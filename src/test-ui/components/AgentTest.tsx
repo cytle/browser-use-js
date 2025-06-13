@@ -2,7 +2,7 @@
  * @file purpose: AI 代理功能测试组件
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Card,
   CardContent,

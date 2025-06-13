@@ -10,7 +10,6 @@ import type {
   SecurityConfig,
   SecurityReport,
   IframeInstance,
-  BaseConfig,
 } from '../../types';
 
 /**

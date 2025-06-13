@@ -9,7 +9,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export default defineConfig({
-  plugins: [tailwindcss(), react()],
+  plugins: [
+    tailwindcss(),
+    react({
+      jsxRuntime: 'automatic',
+    }),
+  ],
   // 开发服务器配置
   server: {
     port: 3000,
