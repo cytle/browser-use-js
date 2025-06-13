@@ -13,6 +13,7 @@ import { LogViewer } from './LogViewer';
 import { PerformanceMonitor } from './PerformanceMonitor';
 import { BrowserUseDemo } from './BrowserUseDemo';
 import { TestPageContent } from './TestPageContent';
+import { ClickableElementTest } from './ClickableElementTest';
 import { useTestState } from '../hooks/useTestState';
 import { getVersionInfo } from '../../main';
 import {
@@ -24,6 +25,7 @@ import {
   FileText,
   Sparkles,
   GripVertical,
+  MousePointer,
 } from 'lucide-react';
 
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
@@ -111,7 +113,7 @@ export function TestApp() {
                 className='h-full flex flex-col'
               >
                 <div className='px-2 py-2 border-b border-slate-200 dark:border-slate-700'>
-                  <TabsList className='grid w-full grid-cols-3 gap-1 h-auto'>
+                  <TabsList className='grid w-full grid-cols-4 gap-1 h-auto'>
                     <TabsTrigger
                       value='demo'
                       className='flex flex-col items-center gap-1 text-xs p-2'
@@ -132,6 +134,13 @@ export function TestApp() {
                     >
                       <Globe className='h-3 w-3' />
                       DOM
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value='clickable'
+                      className='flex flex-col items-center gap-1 text-xs p-2'
+                    >
+                      <MousePointer className='h-3 w-3' />
+                      可点击
                     </TabsTrigger>
                   </TabsList>
                   <TabsList className='grid w-full grid-cols-3 gap-1 h-auto mt-1'>
@@ -162,7 +171,7 @@ export function TestApp() {
                 <div className='flex-1 overflow-auto p-2'>
                   {/* 综合演示 */}
                   <TabsContent value='demo' className='mt-0'>
-                    <Card className='h-full'>
+                    <Card>
                       <CardHeader className='pb-2'>
                         <CardTitle className='text-lg flex items-center gap-2'>
                           <Activity className='h-4 w-4 text-blue-500' />
@@ -176,8 +185,8 @@ export function TestApp() {
                   </TabsContent>
 
                   {/* 系统测试 */}
-                  <TabsContent value='system' className='mt-0 h-full'>
-                    <Card className='h-full'>
+                  <TabsContent value='system' className='mt-0'>
+                    <Card>
                       <CardHeader className='pb-2'>
                         <CardTitle className='text-lg flex items-center gap-2'>
                           <Settings className='h-4 w-4 text-green-500' />
@@ -191,8 +200,8 @@ export function TestApp() {
                   </TabsContent>
 
                   {/* DOM 测试 */}
-                  <TabsContent value='dom' className='mt-0 h-full'>
-                    <Card className='h-full'>
+                  <TabsContent value='dom' className='mt-0 '>
+                    <Card>
                       <CardHeader className='pb-2'>
                         <CardTitle className='text-lg flex items-center gap-2'>
                           <Globe className='h-4 w-4 text-purple-500' />
@@ -205,9 +214,24 @@ export function TestApp() {
                     </Card>
                   </TabsContent>
 
+                  {/* 可点击元素测试 */}
+                  <TabsContent value='clickable' className='mt-0'>
+                    <Card>
+                      <CardHeader className='pb-2'>
+                        <CardTitle className='text-lg flex items-center gap-2'>
+                          <MousePointer className='h-4 w-4 text-cyan-500' />
+                          可点击元素测试
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className='pt-0'>
+                        <ClickableElementTest />
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+
                   {/* 代理测试 */}
-                  <TabsContent value='agent' className='mt-0 h-full'>
-                    <Card className='h-full'>
+                  <TabsContent value='agent' className='mt-0 '>
+                    <Card>
                       <CardHeader className='pb-2'>
                         <CardTitle className='text-lg flex items-center gap-2'>
                           <Bot className='h-4 w-4 text-orange-500' />
@@ -221,8 +245,8 @@ export function TestApp() {
                   </TabsContent>
 
                   {/* 性能监控 */}
-                  <TabsContent value='performance' className='mt-0 h-full'>
-                    <Card className='h-full'>
+                  <TabsContent value='performance' className='mt-0 '>
+                    <Card>
                       <CardHeader className='pb-2'>
                         <CardTitle className='text-lg flex items-center gap-2'>
                           <BarChart3 className='h-4 w-4 text-red-500' />
@@ -236,8 +260,8 @@ export function TestApp() {
                   </TabsContent>
 
                   {/* 日志查看器 */}
-                  <TabsContent value='logs' className='mt-0 h-full'>
-                    <Card className='h-full'>
+                  <TabsContent value='logs' className='mt-0 '>
+                    <Card>
                       <CardHeader className='pb-2'>
                         <CardTitle className='text-lg flex items-center gap-2'>
                           <FileText className='h-4 w-4 text-indigo-500' />
