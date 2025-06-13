@@ -2,7 +2,7 @@
  * @file purpose: 日志查看和管理组件
  */
 
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Card,
   CardContent,

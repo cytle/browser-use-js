@@ -2,7 +2,7 @@
  * @file purpose: 系统初始化和配置测试组件
  */
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   CardContent,

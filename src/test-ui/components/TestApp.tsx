@@ -23,16 +23,15 @@ import {
   BarChart3,
   FileText,
   Sparkles,
-  ChevronLeft,
-  ChevronRight,
+  GripVertical,
 } from 'lucide-react';
-import { Button } from './ui/button';
+
+import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 
 export function TestApp() {
   const { logs, addLog } = useTestState();
   const [versionInfo, setVersionInfo] = useState<any>(null);
   const [activeTab, setActiveTab] = useState('demo');
-  const [isRightPanelCollapsed, setIsRightPanelCollapsed] = useState(false);
 
   useEffect(() => {
     try {
@@ -45,55 +44,41 @@ export function TestApp() {
   }, [addLog]);
 
   return (
-    <div className='h-screen flex bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800'>
-      {/* 左侧主内容区域 - 测试页面 */}
-      <div
-        className={`flex-1 transition-all duration-300 ${isRightPanelCollapsed ? 'mr-0' : 'mr-2'}`}
-      >
-        <div className='h-full bg-white dark:bg-slate-800 rounded-l-lg shadow-lg overflow-hidden'>
-          <div className='h-full flex flex-col'>
-            {/* 左侧头部 */}
-            <div className='p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900'>
-              <h2 className='text-xl font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2'>
-                <Globe className='h-5 w-5 text-blue-500' />
-                测试页面区域
-              </h2>
-              <p className='text-sm text-slate-600 dark:text-slate-400 mt-1'>
-                这里将显示被测试的网页内容
-              </p>
-            </div>
+    <div className='h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800'>
+      <PanelGroup direction='horizontal' className='h-full'>
+        {/* 左侧主内容区域 - 测试页面 */}
+        <Panel defaultSize={70} minSize={30} className='flex'>
+          <div className='flex-1 bg-white dark:bg-slate-800 rounded-l-lg shadow-lg overflow-hidden m-2 mr-1'>
+            <div className='h-full flex flex-col'>
+              {/* 左侧头部 */}
+              <div className='p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900'>
+                <h2 className='text-xl font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2'>
+                  <Globe className='h-5 w-5 text-blue-500' />
+                  测试页面区域
+                </h2>
+                <p className='text-sm text-slate-600 dark:text-slate-400 mt-1'>
+                  这里将显示被测试的网页内容
+                </p>
+              </div>
 
-            {/* 左侧内容区域 - 测试页面内容 */}
-            <div className='flex-1 overflow-hidden'>
-              <TestPageContent />
+              {/* 左侧内容区域 - 测试页面内容 */}
+              <div className='flex-1 overflow-hidden'>
+                <TestPageContent />
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        </Panel>
 
-      {/* 右侧测试UI面板 */}
-      <div
-        className={`transition-all duration-300 ${isRightPanelCollapsed ? 'w-12' : 'w-96'} flex flex-col bg-white dark:bg-slate-800 rounded-r-lg shadow-lg`}
-      >
-        {/* 折叠/展开按钮 */}
-        <div className='p-2 border-b border-slate-200 dark:border-slate-700'>
-          <Button
-            variant='ghost'
-            size='sm'
-            onClick={() => setIsRightPanelCollapsed(!isRightPanelCollapsed)}
-            className='w-full flex items-center justify-center'
-          >
-            {isRightPanelCollapsed ? (
-              <ChevronLeft className='h-4 w-4' />
-            ) : (
-              <ChevronRight className='h-4 w-4' />
-            )}
-          </Button>
-        </div>
+        {/* 可调整大小的分隔条 */}
+        <PanelResizeHandle className='w-2 bg-transparent hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors duration-200 flex items-center justify-center group'>
+          <div className='w-1 h-8 bg-slate-300 dark:bg-slate-600 rounded-full group-hover:bg-blue-400 dark:group-hover:bg-blue-500 transition-colors duration-200 flex items-center justify-center'>
+            <GripVertical className='h-4 w-4 text-slate-500 dark:text-slate-400 group-hover:text-white' />
+          </div>
+        </PanelResizeHandle>
 
-        {/* 右侧面板内容 */}
-        {!isRightPanelCollapsed && (
-          <div className='flex-1 flex flex-col overflow-hidden'>
+        {/* 右侧测试UI面板 */}
+        <Panel defaultSize={30} minSize={20} maxSize={50} className='flex'>
+          <div className='flex-1 flex flex-col bg-white dark:bg-slate-800 rounded-r-lg shadow-lg overflow-hidden m-2 ml-1'>
             {/* 右侧头部信息 */}
             <div className='p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900'>
               <div className='mb-3'>
@@ -126,7 +111,7 @@ export function TestApp() {
                 className='h-full flex flex-col'
               >
                 <div className='px-2 py-2 border-b border-slate-200 dark:border-slate-700'>
-                  <TabsList className='grid w-full grid-cols-3 gap-1 h-auto'>
+                  <TabsList className='grid w-full grid-cols-4 gap-1 h-auto'>
                     <TabsTrigger
                       value='demo'
                       className='flex flex-col items-center gap-1 text-xs p-2'
@@ -205,13 +190,13 @@ export function TestApp() {
                     </Card>
                   </TabsContent>
 
-                  {/* DOM 处理 */}
+                  {/* DOM 测试 */}
                   <TabsContent value='dom' className='mt-0 h-full'>
                     <Card className='h-full'>
                       <CardHeader className='pb-2'>
                         <CardTitle className='text-lg flex items-center gap-2'>
                           <Globe className='h-4 w-4 text-purple-500' />
-                          DOM 处理
+                          DOM 测试
                         </CardTitle>
                       </CardHeader>
                       <CardContent className='pt-0'>
@@ -220,13 +205,13 @@ export function TestApp() {
                     </Card>
                   </TabsContent>
 
-                  {/* AI 代理 */}
+                  {/* 代理测试 */}
                   <TabsContent value='agent' className='mt-0 h-full'>
                     <Card className='h-full'>
                       <CardHeader className='pb-2'>
                         <CardTitle className='text-lg flex items-center gap-2'>
                           <Bot className='h-4 w-4 text-orange-500' />
-                          AI 代理
+                          代理测试
                         </CardTitle>
                       </CardHeader>
                       <CardContent className='pt-0'>
@@ -250,13 +235,13 @@ export function TestApp() {
                     </Card>
                   </TabsContent>
 
-                  {/* 日志查看 */}
+                  {/* 日志查看器 */}
                   <TabsContent value='logs' className='mt-0 h-full'>
                     <Card className='h-full'>
                       <CardHeader className='pb-2'>
                         <CardTitle className='text-lg flex items-center gap-2'>
                           <FileText className='h-4 w-4 text-indigo-500' />
-                          日志查看
+                          日志查看器
                         </CardTitle>
                       </CardHeader>
                       <CardContent className='pt-0'>
@@ -268,8 +253,8 @@ export function TestApp() {
               </Tabs>
             </div>
           </div>
-        )}
-      </div>
+        </Panel>
+      </PanelGroup>
     </div>
   );
 }

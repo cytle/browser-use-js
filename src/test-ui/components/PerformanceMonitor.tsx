@@ -2,7 +2,7 @@
  * @file purpose: 性能监控和系统资源监测组件
  */
 
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Card,
   CardContent,

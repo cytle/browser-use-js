@@ -118,3 +118,83 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* React Resizable Panels 自定义样式 */
+@layer components {
+  /* 面板组样式 */
+  [data-panel-group] {
+    display: flex;
+  }
+
+  [data-panel-group][data-panel-group-direction='horizontal'] {
+    flex-direction: row;
+  }
+
+  [data-panel-group][data-panel-group-direction='vertical'] {
+    flex-direction: column;
+  }
+
+  /* 面板样式 */
+  [data-panel] {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* 调整手柄样式 */
+  [data-panel-resize-handle] {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: col-resize;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: none;
+    outline: none;
+    transition: all 0.2s ease-in-out;
+  }
+
+  [data-panel-resize-handle]:hover {
+    background-color: rgb(59 130 246 / 0.1);
+  }
+
+  [data-panel-resize-handle]:active {
+    background-color: rgb(59 130 246 / 0.2);
+  }
+
+  [data-panel-resize-handle][data-panel-group-direction='vertical'] {
+    cursor: row-resize;
+  }
+
+  /* 调整手柄指示器 */
+  [data-panel-resize-handle-active] {
+    background-color: rgb(59 130 246 / 0.3) !important;
+  }
+
+  /* 深色模式下的调整手柄样式 */
+  .dark [data-panel-resize-handle]:hover {
+    background-color: rgb(59 130 246 / 0.2);
+  }
+
+  .dark [data-panel-resize-handle]:active {
+    background-color: rgb(59 130 246 / 0.3);
+  }
+
+  .dark [data-panel-resize-handle-active] {
+    background-color: rgb(59 130 246 / 0.4) !important;
+  }
+
+  /* 面板折叠状态样式 */
+  [data-panel][data-panel-collapsible='true'][data-panel-collapsed='true'] {
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  /* 调整手柄焦点样式 */
+  [data-panel-resize-handle]:focus-visible {
+    outline: 2px solid rgb(59 130 246);
+    outline-offset: 2px;
+  }
+}
