@@ -8,6 +8,18 @@
 // 导出 Iframe 管理器
 export { IframeManager, createIframeManager } from './manager';
 
+// 导出消息桥接
+export { MessageBridge, createMessageBridge } from './bridge';
+
+// 导出 DOM 适配器
+export { DOMAdapter, createDOMAdapter } from './adapter';
+
+// 导出跨域代理
+export { CrossOriginProxy, createCrossOriginProxy } from './proxy';
+
+// 导出安全管理器
+export { SecurityManager, createSecurityManager } from './security';
+
 // 导出类型定义（从主类型模块重新导出）
 export type {
   IframeConfig,

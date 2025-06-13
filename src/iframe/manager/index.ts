@@ -8,7 +8,13 @@ import {
   IframeInstance,
   IframeStatus,
   IframeSandboxPermission,
+  ICrossOriginProxy,
+  ISecurityManager,
+  ProxyConfig,
+  SecurityConfig,
 } from '../../types';
+import { createCrossOriginProxy } from '../proxy';
+import { createSecurityManager } from '../security';
 
 /**
  * Iframe 管理器实现类
