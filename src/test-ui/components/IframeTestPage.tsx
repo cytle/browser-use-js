@@ -2,7 +2,7 @@
  * @file purpose: 页面控制台组件 - 直接控制左侧页面的 URL 导航
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Alert, AlertDescription } from './ui/alert';

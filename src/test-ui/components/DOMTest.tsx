@@ -2,7 +2,7 @@
  * @file purpose: DOM 处理和元素识别测试组件
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Card,
   CardContent,

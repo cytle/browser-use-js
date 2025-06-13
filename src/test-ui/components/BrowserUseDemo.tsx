@@ -5,7 +5,7 @@
  * 包括系统初始化、DOM 处理、AI 代理任务执行等核心功能的端到端演示。
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Card,
   CardContent,

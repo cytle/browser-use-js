@@ -133,7 +133,10 @@ export class SecurityManager implements ISecurityManager {
       this.log('Script validation passed');
       return true;
     } catch (error) {
-      this.log('Script validation error:', error.message);
+      this.log(
+        'Script validation error:',
+        error instanceof Error ? error.message : String(error)
+      );
       return false;
     }
   }
@@ -165,7 +168,10 @@ export class SecurityManager implements ISecurityManager {
 
       return false;
     } catch (error) {
-      this.log('Malware detection error:', error.message);
+      this.log(
+        'Malware detection error:',
+        error instanceof Error ? error.message : String(error)
+      );
       return true; // 出错时保守处理，认为是恶意代码
     }
   }
@@ -198,7 +204,10 @@ export class SecurityManager implements ISecurityManager {
 
       this.log('Security policy applied to iframe:', iframe.id);
     } catch (error) {
-      this.log('Failed to apply security policy:', error.message);
+      this.log(
+        'Failed to apply security policy:',
+        error instanceof Error ? error.message : String(error)
+      );
       throw error;
     }
   }
@@ -231,7 +240,10 @@ export class SecurityManager implements ISecurityManager {
 
       this.log('Resource usage monitored for iframe:', iframeId);
     } catch (error) {
-      this.log('Resource monitoring error:', error.message);
+      this.log(
+        'Resource monitoring error:',
+        error instanceof Error ? error.message : String(error)
+      );
     }
   }
 

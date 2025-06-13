@@ -2,7 +2,7 @@
  * @file purpose: 可点击元素处理器测试组件 - 增强版
  */
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -26,7 +26,6 @@ import {
   Layers,
   Play,
   Pause,
-  Settings,
   Download,
   Filter,
 } from 'lucide-react';

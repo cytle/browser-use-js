@@ -145,7 +145,10 @@ export class CrossOriginProxy implements ICrossOriginProxy {
       return response;
     } catch (error) {
       this.stats.failedRequests++;
-      this.log('Request failed:', { url, error: error.message });
+      this.log('Request failed:', {
+        url,
+        error: error instanceof Error ? error.message : String(error),
+      });
       throw error;
     }
   }
@@ -265,7 +268,7 @@ export class CrossOriginProxy implements ICrossOriginProxy {
 
         this.log(
           `Request attempt ${attempt} failed, retrying in ${delay}ms:`,
-          error.message
+          error instanceof Error ? error.message : String(error)
         );
         await this.sleep(delay);
         delay *= this.config.retry.backoff;
