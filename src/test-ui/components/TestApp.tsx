@@ -111,7 +111,7 @@ export function TestApp() {
                 className='h-full flex flex-col'
               >
                 <div className='px-2 py-2 border-b border-slate-200 dark:border-slate-700'>
-                  <TabsList className='grid w-full grid-cols-4 gap-1 h-auto'>
+                  <TabsList className='grid w-full grid-cols-3 gap-1 h-auto'>
                     <TabsTrigger
                       value='demo'
                       className='flex flex-col items-center gap-1 text-xs p-2'
@@ -161,7 +161,7 @@ export function TestApp() {
 
                 <div className='flex-1 overflow-auto p-2'>
                   {/* 综合演示 */}
-                  <TabsContent value='demo' className='mt-0 h-full'>
+                  <TabsContent value='demo' className='mt-0'>
                     <Card className='h-full'>
                       <CardHeader className='pb-2'>
                         <CardTitle className='text-lg flex items-center gap-2'>
