@@ -1,0 +1,11 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+
+# browser-use 复刻规则
+
+- 如果需要复刻 browser-use 仓库，请先找到 browser-use 位置
+- 后续请到此仓库查询文件结构、类型定义、方法定义等
+- 你是browser-use-js，禁止修改此仓库的任何内容
