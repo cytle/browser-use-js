@@ -7,8 +7,17 @@
 
 import type { Browser, BrowserContext, Page } from 'playwright';
 import { chromium } from 'playwright';
-import { BrowserProfile } from './profile';
-import { TabInfo, BrowserStateSummary, BrowserError } from './views';
+import {
+  BrowserProfile,
+  createBrowserProfile,
+  getBrowserArgs,
+  ColorScheme,
+} from './profile';
+import {
+  createTabInfo,
+  createBrowserStateSummary,
+  BrowserError,
+} from './views';
 import { DomService } from '../dom/service';
 import { ClickableElementProcessor } from '../dom/clickable-element-processor/service';
 import { logger } from '../logging';
@@ -28,8 +37,8 @@ export class BrowserService {
     null;
   private readonly cacheTimeoutMs = 5000; // 5秒缓存超时
 
-  constructor(profile: BrowserProfile = new BrowserProfile()) {
-    this.profile = profile;
+  constructor(profile?: BrowserProfile) {
+    this.profile = profile || createBrowserProfile();
   }
 
   /**
@@ -44,10 +53,14 @@ export class BrowserService {
       // 启动浏览器
       this.browser = await chromium.launch({
         headless: this.profile.headless,
-        args: this.profile.getChromiumArgs(),
-        executablePath: this.profile.executablePath || undefined,
-        downloadsPath: this.profile.downloadsPath || undefined,
-        proxy: this.profile.proxy || undefined,
+        args: getBrowserArgs(this.profile),
+        executablePath: this.profile.executablePath
+          ? String(this.profile.executablePath)
+          : undefined,
+        downloadsPath: this.profile.downloadsPath
+          ? String(this.profile.downloadsPath)
+          : undefined,
+        // proxy: this.profile.proxy || undefined, // proxy 在 BrowserProfile 中不存在
       });
 
       // 创建浏览器上下文
@@ -55,16 +68,19 @@ export class BrowserService {
         viewport: this.profile.viewport || undefined,
         userAgent: this.profile.userAgent || undefined,
         locale: this.profile.locale || undefined,
-        colorScheme: this.profile.colorScheme || undefined,
+        colorScheme:
+          this.profile.colorScheme === ColorScheme.NULL
+            ? null
+            : this.profile.colorScheme || undefined,
         timezoneId: this.profile.timezoneId || undefined,
-        geolocation: this.profile.geolocation || undefined,
+        // geolocation: this.profile.geolocation || undefined, // 在 BrowserProfile 中不存在
         permissions: this.profile.permissions || undefined,
-        storageState: this.profile.storageState || undefined,
-        recordVideo: this.profile.recordVideo
-          ? { dir: this.profile.recordVideo }
+        // storageState: this.profile.storageState || undefined, // 在 BrowserProfile 中不存在
+        recordVideo: this.profile.recordVideoDir
+          ? { dir: this.profile.recordVideoDir }
           : undefined,
-        recordHar: this.profile.recordHar
-          ? { path: this.profile.recordHar }
+        recordHar: this.profile.recordHarPath
+          ? { path: this.profile.recordHarPath }
           : undefined,
       });
 
@@ -129,8 +145,8 @@ export class BrowserService {
 
     try {
       await page.goto(url, {
-        waitUntil: this.profile.waitUntil || 'networkidle',
-        timeout: this.profile.timeout,
+        waitUntil: 'networkidle',
+        timeout: this.profile.defaultNavigationTimeout || this.profile.timeout,
       });
 
       // 清除缓存
@@ -155,8 +171,8 @@ export class BrowserService {
 
     if (url) {
       await newPage.goto(url, {
-        waitUntil: this.profile.waitUntil || 'networkidle',
-        timeout: this.profile.timeout,
+        waitUntil: 'networkidle',
+        timeout: this.profile.defaultNavigationTimeout || this.profile.timeout,
       });
     }
 
@@ -219,13 +235,13 @@ export class BrowserService {
   /**
    * 获取所有标签页信息
    */
-  async getTabsInfo(): Promise<TabInfo[]> {
+  async getTabsInfo(): Promise<any[]> {
     if (!this.context) {
       throw new BrowserError('Browser context not available');
     }
 
     const pages = this.context.pages();
-    const tabsInfo: TabInfo[] = [];
+    const tabsInfo: any[] = [];
 
     for (let i = 0; i < pages.length; i++) {
       const page = pages[i];
@@ -233,10 +249,12 @@ export class BrowserService {
         const title = await page.title();
         const url = page.url();
 
-        tabsInfo.push(new TabInfo(i, url, title));
+        tabsInfo.push(createTabInfo(i, url, title));
       } catch (error) {
         logger.warn(`Failed to get info for tab ${i}:`, error);
-        tabsInfo.push(new TabInfo(i, 'about:blank', 'Error loading tab info'));
+        tabsInfo.push(
+          createTabInfo(i, 'about:blank', 'Error loading tab info')
+        );
       }
     }
 
@@ -278,15 +296,16 @@ export class BrowserService {
     }
 
     const page = await this.getCurrentPage();
-    const domService = new DomService(page, logger);
-    const domTree = await domService.getClickableElements();
+    const domService = new DomService(page);
+    const domState = await domService.getClickableElements();
 
-    if (!domTree) {
+    if (!domState?.elementTree) {
       return new Set();
     }
 
-    const hashes =
-      ClickableElementProcessor.getClickableElementsHashes(domTree);
+    const hashes = ClickableElementProcessor.getClickableElementsHashes(
+      domState.elementTree
+    );
 
     // 更新缓存
     this.cachedClickableElementHashes = {
@@ -307,26 +326,25 @@ export class BrowserService {
   /**
    * 获取浏览器状态摘要
    */
-  async getStateSummary(): Promise<BrowserStateSummary> {
+  async getStateSummary(): Promise<any> {
     const page = await this.getCurrentPage();
-    const domService = new DomService(page, logger);
+    const domService = new DomService(page);
 
     try {
       // 获取DOM树和可点击元素
-      const elementTree = await domService.getClickableElements();
-      const selectorMap = await domService.getSelectorMap();
+      const domState = await domService.getClickableElements();
       const tabs = await this.getTabsInfo();
 
       const url = page.url();
       const title = await page.title();
 
-      return new BrowserStateSummary(
+      return createBrowserStateSummary({
         url,
         title,
-        elementTree,
-        selectorMap,
-        tabs
-      );
+        elementTree: domState.elementTree,
+        selectorMap: domState.selectorMap,
+        tabs,
+      });
     } catch (error) {
       logger.error('Failed to get state summary:', error);
       throw new BrowserError(`Failed to get state summary: ${error}`);
@@ -341,11 +359,10 @@ export class BrowserService {
 
     try {
       await page.evaluate(
-        (scrollX, scrollY) => {
+        ({ scrollX, scrollY }: { scrollX: number; scrollY: number }) => {
           window.scrollBy(scrollX, scrollY);
         },
-        x,
-        y
+        { scrollX: x, scrollY: y }
       );
 
       // 清除缓存，因为页面视图可能已改变

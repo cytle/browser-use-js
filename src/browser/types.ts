@@ -6,6 +6,15 @@
 import type { Page as PlaywrightPage, BrowserContext } from 'playwright';
 
 /**
+ * 视口尺寸类型
+ * 定义浏览器视口的宽度和高度
+ */
+export interface ViewportSize {
+  width: number;
+  height: number;
+}
+
+/**
  * 页面类型别名
  * 使用 Playwright 的 Page 类型
  */

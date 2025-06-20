@@ -393,8 +393,27 @@ Always respond with valid JSON containing your next action.`,
   /**
    * 获取当前状态
    */
-  getState(): AgentState {
-    return { ...this.state };
+  getState(): Omit<AgentState, 'generateId'> {
+    const {
+      agentId,
+      nSteps,
+      consecutiveFailures,
+      lastResult,
+      lastModelOutput,
+      paused,
+      stopped,
+      messageManagerState,
+    } = this.state;
+    return {
+      agentId,
+      nSteps,
+      consecutiveFailures,
+      lastResult,
+      lastModelOutput,
+      paused,
+      stopped,
+      messageManagerState,
+    };
   }
 
   /**

@@ -6,7 +6,10 @@
  */
 
 import { BrowserStateSummary } from '../browser/views.js';
-import { MessageManagerState } from './message-manager/views.js';
+import {
+  MessageHistory,
+  MessageManagerState,
+} from './message-manager/views.js';
 
 export interface ActionResult {
   error?: string;
@@ -58,13 +61,7 @@ export class AgentState {
     this.paused = false;
     this.stopped = false;
     this.messageManagerState = {
-      history: {
-        messages: [],
-        currentTokens: 0,
-        addMessage: () => {},
-        getTotalTokens: () => 0,
-        removeLastStateMessage: () => {},
-      },
+      history: new MessageHistory(),
       toolId: 1,
     };
   }

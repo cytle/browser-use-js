@@ -38,7 +38,7 @@ export class RegisteredActionImpl implements RegisteredAction {
   public name: string;
   public description: string;
   public function: (...args: any[]) => any | Promise<any>;
-  public paramModel: z.ZodType<any>;
+  public paramModel: new () => any;
   public domains?: string[];
   public pageFilter?: (page: Page) => boolean;
 

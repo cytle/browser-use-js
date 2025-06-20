@@ -6,6 +6,7 @@
  */
 
 import { logger } from '../../logging.js';
+import { MessageManager } from '../message-manager/service.js';
 
 /**
  * 记忆项接口
@@ -38,12 +39,21 @@ export interface MemoryRetrievalOptions {
 /**
  * 记忆管理服务
  */
-export class MemoryService {
+export class Memory {
   private memories: Map<string, MemoryItem> = new Map();
   private maxMemories: number;
   private compressionThreshold: number;
+  private messageManager: MessageManager;
+  private llm: any;
 
-  constructor(maxMemories: number = 1000, compressionThreshold: number = 800) {
+  constructor(
+    messageManager: MessageManager,
+    llm: any,
+    maxMemories: number = 1000,
+    compressionThreshold: number = 800
+  ) {
+    this.messageManager = messageManager;
+    this.llm = llm;
     this.maxMemories = maxMemories;
     this.compressionThreshold = compressionThreshold;
   }

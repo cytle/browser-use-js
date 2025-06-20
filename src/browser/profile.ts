@@ -5,8 +5,8 @@
  * 功能描述: 浏览器配置和启动参数管理，包括各种枚举和配置选项
  */
 
-import os from 'os';
-import path from 'path';
+import * as os from 'os';
+import * as path from 'path';
 import { ViewportSize } from './types.js';
 
 // 环境检测
@@ -411,7 +411,7 @@ export const DEFAULT_BROWSER_PROFILE: BrowserProfile = {
   stealth: false,
   disableSecurity: false,
   deterministicRendering: false,
-  keepAlive: null,
+  keepAlive: false,
   windowPosition: { width: 0, height: 0 },
   defaultNavigationTimeout: undefined,
   defaultTimeout: undefined,
