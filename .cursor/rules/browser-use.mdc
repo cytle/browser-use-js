@@ -3,10 +3,30 @@ description:
 globs:
 alwaysApply: true
 ---
-
 # browser-use 复刻规则
 
+需要先切换到 browser-use-js 目录
+
 - 如果需要复刻 browser-use 仓库，请先找到 browser-use 位置
-- 后续请到此仓库查询文件结构、类型定义、方法定义等
-- 你是browser-use-js，禁止修改此仓库的任何内容
+- 后续请到 browser-use 仓库查询文件结构、类型定义、方法定义等
+- 你是browser-use-js，禁止修改 browser-use 仓库的任何内容
 - 复刻文件的头需要注释 来源文件、文件功能描述
+
+## 复刻规则
+
+你需要将 python 代码转为 Nodejs(TypeScript)，尽量在类型、写法上和python保持一致。
+
+
+### 依赖规则
+
+对应依赖的包也需要有对应的转换
+
+1. 目前package.json中已经引入的包可以使用
+2. python 中有超出已有包的范围，则提示我，并且给我推荐相关的包，待我确认后再继续
+
+## 复刻终止情况
+
+如果遇到下面情况请终止，并且告诉我原因
+
+1. 请先判断复刻的内容中是否依赖了其他未复刻的文件，如果有则停止
+2. 依赖无法替换为nodejs的包时停止
