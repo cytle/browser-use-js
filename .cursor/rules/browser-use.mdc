@@ -9,3 +9,4 @@ alwaysApply: true
 - 如果需要复刻 browser-use 仓库，请先找到 browser-use 位置
 - 后续请到此仓库查询文件结构、类型定义、方法定义等
 - 你是browser-use-js，禁止修改此仓库的任何内容
+- 复刻文件的头需要注释 来源文件、文件功能描述
