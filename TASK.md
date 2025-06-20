@@ -57,7 +57,7 @@
 
 **状态**: TODO **负责人**: - **预估工时**: 4-6小时 **开始时间**: - **完成时间**: -
 
-**任务概述**: 复刻 `browser_use/utils.py` 到 `src/utils/index.ts`，提供项目基础工具函数。
+**任务概述**: 复刻 `browser_use/utils.py` 到 `src/utils.ts`，提供项目基础工具函数。
 
 **技术要求**:
 
@@ -80,7 +80,7 @@
 - [ ] 类型定义完整
 - [ ] 文档注释完整
 
-**源文件**: `browser_use/utils.py` (645行) **目标文件**: `src/utils/index.ts`
+**源文件**: `browser_use/utils.py` (645行) **目标文件**: `src/utils.ts`
 
 ---
 
@@ -88,7 +88,7 @@
 
 **状态**: TODO **负责人**: - **预估工时**: 1小时 **开始时间**: - **完成时间**: -
 
-**任务概述**: 复刻 `browser_use/exceptions.py` 到 `src/exceptions/index.ts`，定义项目异常类。
+**任务概述**: 复刻 `browser_use/exceptions.py` 到 `src/exceptions.ts`，定义项目异常类。
 
 **技术要求**:
 
@@ -107,7 +107,7 @@
 - [ ] 错误处理机制完整
 - [ ] 类型安全
 
-**源文件**: `browser_use/exceptions.py` (6行) **目标文件**: `src/exceptions/index.ts`
+**源文件**: `browser_use/exceptions.py` (6行) **目标文件**: `src/exceptions.ts`
 
 ---
 
@@ -115,7 +115,7 @@
 
 **状态**: TODO **负责人**: - **预估工时**: 2-3小时 **开始时间**: - **完成时间**: -
 
-**任务概述**: 复刻 `browser_use/logging_config.py` 到 `src/logging/index.ts`，实现日志系统。
+**任务概述**: 复刻 `browser_use/logging_config.py` 到 `src/logging.ts`，实现日志系统。
 
 **技术要求**:
 
@@ -136,7 +136,7 @@
 - [ ] 性能影响最小
 - [ ] 配置灵活
 
-**源文件**: `browser_use/logging_config.py` (143行) **目标文件**: `src/logging/index.ts`
+**源文件**: `browser_use/logging_config.py` (143行) **目标文件**: `src/logging.ts`
 
 ---
 
@@ -674,11 +674,6 @@
 请确认是否开始第一个任务，或者是否需要调整任务计划。
 
 ---
-
-## 📝 更新日志
-
-- 2024-12-19: 创建任务计划文档
-- 待更新...
 
 ## 🔍 注意事项
 
