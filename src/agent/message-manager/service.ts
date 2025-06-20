@@ -445,7 +445,7 @@ ${this.formatElementTree(browserStateSummary.elementTree)}`;
 
       for (let i = 0; i < this.state.history.messages.length; i++) {
         const m = this.state.history.messages[i];
-        const messageType = m.message.type || 'unknown';
+        const messageType = m.message.getType() || 'unknown';
         const content =
           typeof m.message.content === 'string'
             ? m.message.content.slice(0, 100)

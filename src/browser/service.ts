@@ -7,11 +7,11 @@
 
 import type { Browser, BrowserContext, Page } from 'playwright';
 import { chromium } from 'playwright';
-import { BrowserProfile } from './profile.js';
-import { TabInfo, BrowserStateSummary, BrowserError } from './views.js';
-import { DomService } from '../dom/service.js';
-import { ClickableElementProcessor } from '../dom/clickable-element-processor/service.js';
-import { logger } from '../logging.js';
+import { BrowserProfile } from './profile';
+import { TabInfo, BrowserStateSummary, BrowserError } from './views';
+import { DomService } from '../dom/service';
+import { ClickableElementProcessor } from '../dom/clickable-element-processor/service';
+import { logger } from '../logging';
 
 interface CachedClickableElementHashes {
   hashes: Set<string>;

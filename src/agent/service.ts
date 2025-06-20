@@ -11,8 +11,8 @@ import { Controller } from '../controller/service.js';
 import {
   MessageManager,
   MessageManagerSettings,
-} from './message-manager/service.js';
-import { Memory } from './memory/service.js';
+} from './message-manager/service';
+import { Memory } from './memory/service';
 import {
   ActionResult,
   AgentOutput,
