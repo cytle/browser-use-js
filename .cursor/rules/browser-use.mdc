@@ -10,11 +10,23 @@ alwaysApply: true
 - 如果需要复刻 browser-use 仓库，请先找到 browser-use 位置
 - 后续请到 browser-use 仓库查询文件结构、类型定义、方法定义等
 - 你是browser-use-js，禁止修改 browser-use 仓库的任何内容
-- 复刻文件的头需要注释 来源文件、文件功能描述
+
 
 ## 复刻规则
 
 你需要将 python 代码转为 Nodejs(TypeScript)，尽量在类型、写法上和python保持一致。
+
+复刻文件的头需要注释 来源文件、文件功能描述， 如下。
+
+```ts
+/**
+ * Browser-Use JS 异常模块
+ *
+ * 源文件: browser_use/exceptions.py
+ * 功能描述: 定义项目异常类，提供 LLM 相关错误处理
+ */
+
+```
 
 
 ### 依赖规则

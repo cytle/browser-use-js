@@ -42,6 +42,7 @@
     "@types/node": "^24.0.0",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
+    "@types/winston": "^2.4.4",
     "@typescript-eslint/eslint-plugin": "^8.34.0",
     "@typescript-eslint/parser": "^8.34.0",
     "@vitejs/plugin-react": "^4.5.2",
@@ -109,12 +110,14 @@
     "hnswlib-node": "^3.0.0",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.514.0",
+    "playwright": "^1.53.1",
     "posthog-node": "^5.1.1",
     "screenshot-desktop": "^1.15.1",
     "systeminformation": "^5.27.6",
     "tailwind-merge": "^3.3.1",
     "turndown": "^7.2.0",
     "uuid": "^11.1.0",
+    "winston": "^3.17.0",
     "zod": "^3.25.67",
     "zustand": "^5.0.5"
   }
