@@ -5,21 +5,17 @@
  * 功能描述: 管理LLM对话历史、消息格式化和令牌计算
  */
 
-import type {
+import {
   BaseMessage,
   HumanMessage,
   AIMessage,
   SystemMessage,
   ToolMessage,
 } from '@langchain/core/messages';
-import {
-  MessageMetadata,
-  MessageHistory,
-  MessageManagerState,
-} from './views.js';
-import { BrowserStateSummary } from '../../browser/views.js';
-import { ActionResult, AgentOutput, AgentStepInfo } from '../views.js';
-import { FileSystem } from '../../filesystem/service.js';
+import { MessageMetadata, MessageHistory, MessageManagerState } from './views';
+import { BrowserStateSummary } from '../../browser/views';
+import { ActionResult, AgentOutput, AgentStepInfo } from '../views';
+import { FileSystem } from '../../filesystem/file-system';
 import { logger } from '../../logging.js';
 
 export interface MessageManagerSettings {
@@ -68,41 +64,38 @@ export class MessageManager {
     this.addMessageWithTokens(this.systemPrompt, undefined, 'init');
 
     if (this.settings.messageContext) {
-      const contextMessage: HumanMessage = {
+      const contextMessage = new HumanMessage({
         content: `<task_context>${this.settings.messageContext}</task_context>`,
         additional_kwargs: {},
         response_metadata: {},
-        type: 'human',
         name: undefined,
         id: undefined,
-      };
+      });
       this.addMessageWithTokens(contextMessage, undefined, 'init');
     }
 
     if (this.settings.sensitiveData) {
       const info = `<sensitive_data>Here are placeholders for sensitive data: ${Object.keys(this.settings.sensitiveData).join(', ')}
 To use them, write <secret>the placeholder name</secret> </sensitive_data>`;
-      const infoMessage: HumanMessage = {
+      const infoMessage = new HumanMessage({
         content: info,
         additional_kwargs: {},
         response_metadata: {},
-        type: 'human',
         name: undefined,
         id: undefined,
-      };
+      });
       this.addMessageWithTokens(infoMessage, undefined, 'init');
     }
 
     // 添加示例消息
-    const placeholderMessage: HumanMessage = {
+    const placeholderMessage = new HumanMessage({
       content:
         '<example_1>\nHere is an example output of thinking and tool call. You can use it as a reference but do not copy it exactly.',
       additional_kwargs: {},
       response_metadata: {},
-      type: 'human',
       name: undefined,
       id: undefined,
-    };
+    });
     this.addMessageWithTokens(placeholderMessage, undefined, 'init');
 
     // 添加示例工具调用
@@ -114,11 +107,10 @@ To use them, write <secret>the placeholder name</secret> </sensitive_data>`;
    */
   private addExampleToolCalls(): void {
     // 这里简化处理，实际应该包含完整的示例
-    const exampleMessage: AIMessage = {
+    const exampleMessage = new AIMessage({
       content: '',
       additional_kwargs: {},
       response_metadata: {},
-      type: 'ai',
       name: undefined,
       id: undefined,
       tool_calls: [
@@ -136,18 +128,17 @@ To use them, write <secret>the placeholder name</secret> </sensitive_data>`;
           type: 'tool_call',
         },
       ],
-    };
+    });
     this.addMessageWithTokens(exampleMessage);
 
-    const toolMessage: ToolMessage = {
+    const toolMessage = new ToolMessage({
       content: '',
       additional_kwargs: {},
       response_metadata: {},
-      type: 'tool',
       name: undefined,
       id: undefined,
       tool_call_id: '1',
-    };
+    });
     this.addMessageWithTokens(toolMessage);
   }
 
@@ -213,14 +204,13 @@ ${this.formatElementTree(browserStateSummary.elementTree)}`;
       content += `\n\nStep info: ${stepInfo.stepNumber}/${stepInfo.maxSteps}`;
     }
 
-    return {
+    return new HumanMessage({
       content,
       additional_kwargs: {},
       response_metadata: {},
-      type: 'human',
       name: undefined,
       id: undefined,
-    };
+    });
   }
 
   /**
@@ -267,15 +257,14 @@ ${this.formatElementTree(browserStateSummary.elementTree)}`;
       },
     ];
 
-    const msg: AIMessage = {
+    const msg = new AIMessage({
       content: '',
       additional_kwargs: {},
       response_metadata: {},
-      type: 'ai',
       name: undefined,
       id: undefined,
       tool_calls: toolCalls,
-    };
+    });
 
     this.addMessageWithTokens(msg);
     this.addToolMessage('');
@@ -285,15 +274,14 @@ ${this.formatElementTree(browserStateSummary.elementTree)}`;
    * 添加工具消息
    */
   addToolMessage(content: string, messageType?: string): void {
-    const msg: ToolMessage = {
+    const msg = new ToolMessage({
       content,
       additional_kwargs: {},
       response_metadata: {},
-      type: 'tool',
       name: undefined,
       id: undefined,
       tool_call_id: this.state.toolId.toString(),
-    };
+    });
 
     this.state.toolId += 1;
     this.addMessageWithTokens(msg, undefined, messageType);
@@ -367,7 +355,7 @@ ${this.formatElementTree(browserStateSummary.elementTree)}`;
       return value;
     };
 
-    const newMessage = { ...message };
+    const newMessage = { ...message } as BaseMessage;
     if (typeof newMessage.content === 'string') {
       newMessage.content = replaceSensitive(newMessage.content);
     } else if (Array.isArray(newMessage.content)) {
@@ -528,14 +516,13 @@ ${this.formatElementTree(browserStateSummary.elementTree)}`;
       // 移除旧消息并添加截断后的消息
       this.state.history.removeLastStateMessage();
 
-      const newMessage: HumanMessage = {
+      const newMessage = new HumanMessage({
         content: newContent,
         additional_kwargs: {},
         response_metadata: {},
-        type: 'human',
         name: undefined,
         id: undefined,
-      };
+      });
 
       this.addMessageWithTokens(newMessage);
       logger.debug(`Truncated message by ${proportionToRemove * 100}%`);

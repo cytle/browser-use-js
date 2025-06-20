@@ -32,6 +32,14 @@ export abstract class DOMBaseNode {
   abstract toJSON(): Record<string, any>;
 }
 
+export const isDOMTextNode = (node: DOMBaseNode): node is DOMTextNode => {
+  return node instanceof DOMTextNode;
+};
+
+export const isDOMElementNode = (node: DOMBaseNode): node is DOMElementNode => {
+  return node instanceof DOMElementNode;
+};
+
 /**
  * DOM 文本节点类
  * 表示 DOM 中的文本内容
@@ -123,14 +131,21 @@ export class DOMElementNode extends DOMBaseNode {
   // 缓存的哈希值
   private _hash: HashedDomElement | null = null;
 
-  constructor(
-    tagName: string,
-    xpath: string,
-    attributes: Record<string, string>,
-    children: DOMBaseNode[] = [],
-    isVisible: boolean,
-    parent: DOMElementNode | null = null
-  ) {
+  constructor({
+    tagName,
+    xpath,
+    attributes,
+    children = [],
+    isVisible,
+    parent = null,
+  }: {
+    tagName: string;
+    xpath: string;
+    attributes: Record<string, string>;
+    children: DOMBaseNode[];
+    isVisible: boolean;
+    parent: DOMElementNode | null;
+  }) {
     super(isVisible, parent);
     this.tagName = tagName;
     this.xpath = xpath;

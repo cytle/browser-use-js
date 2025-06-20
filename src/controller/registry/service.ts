@@ -11,12 +11,12 @@ import { timeExecutionAsync } from '../../utils.js';
 import type { BrowserSession } from '../../browser/types.js';
 import type { Page } from '../../browser/types.js';
 import type { FileSystem } from '../../filesystem/file-system.js';
-import type {
+import {
   ActionModel,
   ActionRegistry,
-  RegisteredAction,
   SpecialActionParameters,
 } from './views.js';
+import { RegisteredAction } from './views.js';
 
 /**
  * 上下文类型变量
@@ -33,10 +33,10 @@ export type ActionFunction = (...args: any[]) => any | Promise<any>;
  */
 interface SpecialParamTypes {
   context: any;
-  browserSession: typeof BrowserSession;
-  browser: typeof BrowserSession; // legacy
-  browserContext: typeof BrowserSession; // legacy
-  page: typeof Page;
+  browserSession: BrowserSession;
+  browser: BrowserSession; // legacy
+  browserContext: BrowserSession; // legacy
+  page: Page;
   pageExtractionLlm: typeof BaseChatModel;
   availableFilePaths: any[];
   hasSensitiveData: boolean;
@@ -47,7 +47,7 @@ interface SpecialParamTypes {
  * 注册表服务类
  */
 export class Registry<TContext = Context> {
-  private registry: ActionRegistry = { actions: {} };
+  private registry: ActionRegistry = new ActionRegistry();
   private excludeActions: string[];
 
   constructor(excludeActions?: string[]) {
@@ -60,14 +60,14 @@ export class Registry<TContext = Context> {
   private getSpecialParamTypes(): Record<string, any> {
     return {
       context: null, // Context是泛型，无法验证类型
-      browserSession: BrowserSession,
-      browser: BrowserSession, // legacy
-      browserContext: BrowserSession, // legacy
-      page: Page,
+      browserSession: null,
+      browser: null, // legacy
+      browserContext: null, // legacy
+      page: null,
       pageExtractionLlm: BaseChatModel,
       availableFilePaths: Array,
       hasSensitiveData: Boolean,
-      fileSystem: FileSystem,
+      fileSystem: null,
     };
   }
 
@@ -139,14 +139,14 @@ export class Registry<TContext = Context> {
           options?.paramModel
         );
 
-      const action: RegisteredAction<T> = {
+      const action = new RegisteredAction({
         name: func.name,
         description,
         function: normalizedFunc,
         paramModel: actualParamModel,
         domains: finalDomains,
         pageFilter: options?.pageFilter,
-      };
+      });
 
       this.registry.actions[func.name] = action;
 
@@ -214,11 +214,12 @@ export class Registry<TContext = Context> {
         hasSensitiveData:
           actionName === 'input_text' && Boolean(options?.sensitiveData),
         fileSystem: options?.fileSystem,
+        page: null as Page | null,
       };
 
       // 处理异步页面参数
       if (options?.browserSession) {
-        specialContext['page'] = await options.browserSession.getCurrentPage();
+        specialContext.page = await options.browserSession.getCurrentPage();
       }
 
       // 执行动作
@@ -230,8 +231,7 @@ export class Registry<TContext = Context> {
           `⚠️ Action ${actionName}() failed: ${error}, trying one more time...`
         );
         if (options?.browserSession) {
-          specialContext['page'] =
-            await options.browserSession.getCurrentPage();
+          specialContext.page = await options.browserSession.getCurrentPage();
         }
 
         try {

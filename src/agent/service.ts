@@ -13,7 +13,6 @@ import {
   MessageManagerSettings,
 } from './message-manager/service.js';
 import { Memory } from './memory/service.js';
-import { BrowserStateSummary } from '../browser/views.js';
 import {
   ActionResult,
   AgentOutput,
@@ -22,7 +21,8 @@ import {
   AgentState,
 } from './views.js';
 import { logger } from '../logging.js';
-import { FileSystem } from '../filesystem/service.js';
+import { FileSystem } from '../filesystem/file-system';
+import { SystemMessage } from '@langchain/core/messages';
 
 export interface AgentSettings {
   useVision: boolean;
@@ -100,7 +100,7 @@ export class Agent {
     };
 
     // 创建系统消息（简化版）
-    const systemMessage = {
+    const systemMessage = new SystemMessage({
       content: `You are a web automation agent. Your task is: ${task}
 
 Available actions:
@@ -109,10 +109,9 @@ ${this.controller.getActionDescriptions()}
 Always respond with valid JSON containing your next action.`,
       additional_kwargs: {},
       response_metadata: {},
-      type: 'system' as const,
       name: undefined,
       id: undefined,
-    };
+    });
 
     this.messageManager = new MessageManager(
       task,

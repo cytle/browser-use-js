@@ -9,15 +9,14 @@ import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { Page } from 'playwright';
 import { logger } from '../logging.js';
-import { timeExecutionAsync } from '../utils.js';
+import { isNullOrUndefined, timeExecutionAsync } from '../utils.js';
 import type {
   DOMBaseNode,
-  DOMElementNode,
   DOMState,
-  DOMTextNode,
   SelectorMap,
   ViewportInfo,
 } from './views.js';
+import { DOMTextNode, DOMElementNode, isDOMElementNode } from './views.js';
 
 /**
  * 页面框架评估结果
@@ -218,21 +217,14 @@ export class DomService {
 
     // 如果是空白页面，返回简单的DOM结构
     if (this.page.url() === 'about:blank') {
-      const emptyElement: DOMElementNode = {
-        type: 'element',
+      const emptyElement = new DOMElementNode({
         tagName: 'body',
         xpath: '',
         attributes: {},
         children: [],
         isVisible: false,
         parent: null,
-        isInteractive: false,
-        isTopElement: false,
-        isInViewport: false,
-        highlightIndex: undefined,
-        shadowRoot: false,
-        viewportInfo: undefined,
-      };
+      });
       return [emptyElement, {}];
     }
 
@@ -250,7 +242,11 @@ export class DomService {
       const evalPage = await this.page.evaluate(this.jsCode, args);
       const pageEvalResult = new PageFrameEvaluation({
         url: this.page.url(),
-        result: evalPage,
+        result: evalPage as {
+          map: Record<string, any>;
+          perfMetrics?: Record<string, any>;
+          rootId?: string;
+        },
       });
 
       const frames = [pageEvalResult];
@@ -280,7 +276,11 @@ export class DomService {
 
             const frame = new PageFrameEvaluation({
               url: iframe.url(),
-              result: iframeEvalResult,
+              result: iframeEvalResult as {
+                map: Record<string, any>;
+                perfMetrics?: Record<string, any>;
+                rootId?: string;
+              },
               name: name || undefined,
               id: id || undefined,
             });
@@ -348,12 +348,12 @@ export class DomService {
 
         nodeMap[id] = node;
 
-        if (node.type === 'element' && node.highlightIndex !== undefined) {
+        if (isDOMElementNode(node) && !isNullOrUndefined(node.highlightIndex)) {
           selectorMap[node.highlightIndex] = node;
         }
 
         // 构建树结构（自底向上）
-        if (node.type === 'element') {
+        if (isDOMElementNode(node)) {
           for (const childId of childrenIds) {
             if (!(childId in nodeMap)) continue;
 
@@ -372,7 +372,7 @@ export class DomService {
         // 在主页面中找到iframe元素
         const iframeElementNode = Object.values(nodeMap).find(
           (node): node is DOMElementNode =>
-            node.type === 'element' &&
+            isDOMElementNode(node) &&
             this.isIframeElement(node, frame.url, frame.name, frame.id)
         );
 
@@ -397,8 +397,8 @@ export class DomService {
       for (const id of Object.keys(frame.map)) {
         const node = nodeMap[id];
         if (
-          node?.type === 'element' &&
-          node.highlightIndex !== undefined &&
+          isDOMElementNode(node) &&
+          !isNullOrUndefined(node.highlightIndex) &&
           node.highlightIndex in selectorMap
         ) {
           delete selectorMap[node.highlightIndex];
@@ -408,7 +408,7 @@ export class DomService {
     }
 
     const htmlToDict = nodeMap[jsRootId];
-    if (!htmlToDict || htmlToDict.type !== 'element') {
+    if (!htmlToDict || !isDOMElementNode(htmlToDict)) {
       throw new Error('Failed to parse HTML to dictionary');
     }
 
@@ -425,40 +425,38 @@ export class DomService {
 
     // 处理文本节点
     if (nodeData.type === 'TEXT_NODE') {
-      const textNode: DOMTextNode = {
-        type: 'text',
-        text: nodeData.text,
-        isVisible: nodeData.isVisible,
-        parent: null,
-      };
+      const textNode = new DOMTextNode(nodeData.text, nodeData.isVisible, null);
       return [textNode, []];
     }
 
     // 处理视口信息
-    let viewportInfo: ViewportInfo | undefined;
+    let viewportInfo: ViewportInfo | null = null;
     if (nodeData.viewport) {
       viewportInfo = {
+        scrollX: nodeData.viewport.scrollX || 0,
+        scrollY: nodeData.viewport.scrollY || 0,
         width: nodeData.viewport.width,
         height: nodeData.viewport.height,
       };
     }
 
-    // 处理元素节点
-    const elementNode: DOMElementNode = {
-      type: 'element',
+    // 处理元素节点 - 使用构造函数创建实例
+    const elementNode = new DOMElementNode({
       tagName: nodeData.tagName,
       xpath: nodeData.xpath,
       attributes: nodeData.attributes || {},
-      children: [],
+      children: [], // children will be set later
       isVisible: nodeData.isVisible || false,
-      isInteractive: nodeData.isInteractive || false,
-      isTopElement: nodeData.isTopElement || false,
-      isInViewport: nodeData.isInViewport || false,
-      highlightIndex: nodeData.highlightIndex,
-      shadowRoot: nodeData.shadowRoot || false,
-      parent: null,
-      viewportInfo,
-    };
+      parent: null, // parent will be set later
+    });
+
+    // 设置其他属性
+    elementNode.isInteractive = nodeData.isInteractive || false;
+    elementNode.isTopElement = nodeData.isTopElement || false;
+    elementNode.isInViewport = nodeData.isInViewport || false;
+    elementNode.highlightIndex = nodeData.highlightIndex ?? null;
+    elementNode.shadowRoot = nodeData.shadowRoot || false;
+    elementNode.viewportInfo = viewportInfo;
 
     const childrenIds = nodeData.children || [];
     return [elementNode, childrenIds];

@@ -271,15 +271,17 @@ export class SignalHandler {
 /**
  * 同步函数执行时间装饰器
  */
-export function timeExecutionSync<T extends AnyFunction>(
-  additionalText: string = ''
-) {
-  return function (
+export function timeExecutionSync(additionalText: string = '') {
+  return function <T>(
     target: any,
-    propertyKey: string,
-    descriptor: TypedPropertyDescriptor<T>
-  ) {
-    const originalMethod = descriptor.value!;
+    propertyKey: string | symbol,
+    descriptor: PropertyDescriptor
+  ): PropertyDescriptor {
+    const originalMethod = descriptor.value;
+
+    if (typeof originalMethod !== 'function') {
+      throw new Error('Decorator can only be applied to methods');
+    }
 
     descriptor.value = function (this: any, ...args: any[]) {
       const startTime = Date.now();
@@ -294,7 +296,7 @@ export function timeExecutionSync<T extends AnyFunction>(
       }
 
       return result;
-    } as T;
+    };
 
     return descriptor;
   };
@@ -303,15 +305,17 @@ export function timeExecutionSync<T extends AnyFunction>(
 /**
  * 异步函数执行时间装饰器
  */
-export function timeExecutionAsync<T extends AsyncFunction>(
-  additionalText: string = ''
-) {
-  return function (
+export function timeExecutionAsync(additionalText: string = '') {
+  return function <T>(
     target: any,
-    propertyKey: string,
-    descriptor: TypedPropertyDescriptor<T>
-  ) {
-    const originalMethod = descriptor.value!;
+    propertyKey: string | symbol,
+    descriptor: PropertyDescriptor
+  ): PropertyDescriptor {
+    const originalMethod = descriptor.value;
+
+    if (typeof originalMethod !== 'function') {
+      throw new Error('Decorator can only be applied to methods');
+    }
 
     descriptor.value = async function (this: any, ...args: any[]) {
       const startTime = Date.now();
@@ -326,7 +330,7 @@ export function timeExecutionAsync<T extends AsyncFunction>(
       }
 
       return result;
-    } as T;
+    };
 
     return descriptor;
   };
@@ -644,3 +648,9 @@ export function logPrettyUrl(url: string, maxLen: number = 22): string {
 
 // 导出常量
 export { BROWSER_USE_CONFIG_DIR };
+
+export const isNullOrUndefined = (
+  value: unknown
+): value is null | undefined => {
+  return value === null || value === undefined;
+};

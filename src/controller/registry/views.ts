@@ -11,15 +11,24 @@ import type { FileSystem } from '../../filesystem/types.js';
  * 注册动作类
  * 表示一个已注册的动作
  */
-export interface RegisteredAction {
+export class RegisteredAction {
   name: string;
   description: string;
   function: (...args: any[]) => any | Promise<any>;
-  paramModel: z.ZodType<any>;
+  paramModel: new () => any;
 
   // 过滤器：提供特定域名或函数来确定该动作是否应在给定页面上可用
   domains?: string[]; // 例如 ['*.google.com', 'www.bing.com', 'yahoo.*']
   pageFilter?: (page: Page) => boolean;
+
+  constructor(data: RegisteredAction) {
+    this.name = data.name;
+    this.description = data.description;
+    this.function = data.function;
+    this.paramModel = data.paramModel;
+    this.domains = data.domains;
+    this.pageFilter = data.pageFilter;
+  }
 }
 
 /**
