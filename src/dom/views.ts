@@ -9,6 +9,9 @@ import type {
   ViewportInfo,
 } from './history-tree-processor/views.js';
 
+// 重新导出类型以供其他模块使用
+export type { ViewportInfo, CoordinateSet, HashedDomElement };
+
 /**
  * DOM 基础节点类
  * 所有 DOM 节点的基类
